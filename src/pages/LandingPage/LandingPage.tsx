@@ -34,11 +34,13 @@ const LandingPage = () => {
       {/* event box */}
       <div className="flex flex-col items-center justify-center w-full p-10 relative">
         <div className="flex justify-center gap-5 flex absolute">
-          <img src="https://lh3.googleusercontent.com/6WlXymfP1jkLLluDyPKhHqR2rghguKzWxL1GmRGMHqZ3uXCDthdiUDDghyTgLaVraNe-PeZdny2s__vbfdL-pRd2_9PE7M6V=w1920-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
+          <img src="https://lh3.googleusercontent.com/uw9Ld5snWK_fdXmhM4i_e8Uonzeo25tFpyWCCHk4g9pF-BY0SAsxGZ6phCPE04pdAF5QS-GoaqTW_a78hvOAQURFqZIi7OGN=w308-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
 
-          <img src="https://lh3.googleusercontent.com/6WlXymfP1jkLLluDyPKhHqR2rghguKzWxL1GmRGMHqZ3uXCDthdiUDDghyTgLaVraNe-PeZdny2s__vbfdL-pRd2_9PE7M6V=w1920-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
+          <img src="https://lh3.googleusercontent.com/-KyPHoUjMjLPF_RJN3sse0JHpDAsHuV06pUit4UwQFo7B6uyF8FVzT1vI273GjL6unD5pTARUFLpeC-4ooUTSFHWTbKmjNY=w308-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
 
-          <img src="https://lh3.googleusercontent.com/6WlXymfP1jkLLluDyPKhHqR2rghguKzWxL1GmRGMHqZ3uXCDthdiUDDghyTgLaVraNe-PeZdny2s__vbfdL-pRd2_9PE7M6V=w1920-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
+          <img src="https://lh3.googleusercontent.com/s0Q6ru7op5eVKrQX6LCwz470sdzy77VnUqkkIL0OHDDieiz4U10uUXv6B8sbU0zDdHPNelNPYJUKR6c9VLTq8mkAGu9JsgQf=w308-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
+          <img src="https://lh3.googleusercontent.com/M50KpWhdJpPB0IWs-a11u0QXOWusR_SrzZYMDZsqCpxNZF0OVFC5FU0QFpzY2-U_ZIYRlX2TNTBwW9dnizMKnrE_SBAyoo_Q=w308-rw" alt="event" className="w-72 h-40 object-cover rounded-lg" />
+
         </div>
       </div>
       {/* items */}
