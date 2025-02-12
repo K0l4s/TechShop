@@ -1,7 +1,7 @@
 import { GrDashboard, GrUser, GrCube, GrClipboard, GrCart, GrSettingsOption } from "react-icons/gr";
 import { Link, useLocation } from "react-router-dom";
-import { useState } from "react";
-import { FaChevronDown } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaChevronDown, FaBars } from "react-icons/fa";
 
 interface LinkProps {
   name: string;
@@ -13,8 +13,22 @@ interface LinkProps {
 const AdminSidebar = () => {
   const activeClass = "bg-[#1E304B] border-l-[6px] border-red-500";
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+  const [isExpanded, setIsExpanded] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsExpanded(window.innerWidth >= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const toggleMenu = (name: string) => {
     setOpenMenus((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  const toggleSidebar = () => {
+    setIsExpanded((prev) => !prev);
   };
 
   const links: LinkProps[] = [
@@ -40,19 +54,22 @@ const AdminSidebar = () => {
   const { pathname } = useLocation();
 
   return (
-    <div className="bg-[#16283C] border-r min-h-screen w-48 sticky top-0 left-0 text-white text-center py-6">
+    <aside className={`bg-[#16283C] border-r min-h-screen transition-all duration-300 ${isExpanded ? "w-48" : "w-16"} sticky top-0 left-0 text-white text-center py-6`} id="adminSide">
+      <button onClick={toggleSidebar} className="text-white focus:outline-none mb-4">
+        <FaBars className="text-lg mx-auto" />
+      </button>
       <div className="flex flex-col gap-2">
         {links.map((link, index) => (
           <div key={index}>
-            <div className="flex items-center justify-between  transition-all duration-300 hover:bg-[#1E304B]">
+            <div className="flex items-center justify-between transition-all duration-300 hover:bg-[#1E304B]">
               <Link
                 to={link.href || "#"}
-                className={`flex items-center w-full gap-3 px-4 py-3 text-sm  transition-all duration-300 hover:bg-[#1E304B] ${pathname === link.href ? activeClass : ""}`}
+                className={`flex items-center w-full gap-3 px-4 py-3 text-sm transition-all duration-300 hover:bg-[#1E304B] ${pathname === link.href ? activeClass : ""}`}
               >
                 <link.icon className="text-lg" />
-                <span className="text-sm font-medium">{link.name}</span>
+                {isExpanded && <span className="text-sm font-medium">{link.name}</span>}
               </Link>
-              {link.subLinks && (
+              {link.subLinks && isExpanded && (
                 <button
                   onClick={() => toggleMenu(link.name)}
                   className="text-white focus:outline-none"
@@ -61,14 +78,13 @@ const AdminSidebar = () => {
                 </button>
               )}
             </div>
-            {link.subLinks && openMenus[link.name] && (
-              <div className="ml-8 flex flex-col gap-1">
+            {link.subLinks && openMenus[link.name] && isExpanded && (
+              <div className="ml-8 flex flex-col gap-1 transition-all duration-300">
                 {link.subLinks.map((subLink, subIndex) => (
                   <Link
                     to={subLink.href}
                     key={subIndex}
-                    className={`px-4 py-2 text-sm transition-all duration-300 hover:bg-[#1E304B] ${pathname === subLink.href ? activeClass : ""
-                      }`}
+                    className={`px-4 py-2 text-sm transition-all duration-300 hover:bg-[#1E304B] ${pathname === subLink.href ? activeClass : ""}`}
                   >
                     {subLink.name}
                   </Link>
@@ -78,7 +94,7 @@ const AdminSidebar = () => {
           </div>
         ))}
       </div>
-    </div>
+    </aside>
   );
 };
 
