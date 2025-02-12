@@ -1,4 +1,4 @@
-import CustomSwipper from "../../components/Custom/CustomSwipper"
+import CustomSwipper from "../../../components/Custom/CustomSwipper"
 
 
 const LandingPage = () => {

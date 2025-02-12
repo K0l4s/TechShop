@@ -1,11 +1,22 @@
 
 import { Outlet } from 'react-router-dom'
+import AdminSidebar from '../../components/Sidebar/AdminSidebar'
+import AdminNavbar from '../../components/Navbar/AdminNavbar'
 
 const AdminLayout = () => {
     return (
         <>
-            <h1>Admin Layout</h1>
-            <Outlet />
+            <div className='flex flex-row'>
+                <div>
+                    <AdminSidebar />
+                </div>
+                <div className='flex flex-col w-full min-h-screen'>
+                    <AdminNavbar />
+                    <div className='p-4'>
+                        <Outlet />
+                    </div>
+                </div>
+            </div>
         </>
     )
 }

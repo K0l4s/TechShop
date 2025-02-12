@@ -1,8 +1,9 @@
 import { Route, Routes } from 'react-router-dom'
-import LoginPage from '../pages/AuthPage/LoginPage'
+import LoginPage from '../pages/AuthPages/LoginPage'
 import AdminLayout from './layout/AdminLayout'
-import LandingPage from '../pages/LandingPage/LandingPage'
+import LandingPage from '../pages/MainPages/LandingPage/LandingPage'
 import MainLayout from './layout/MainLayout'
+import Dashboard from '../pages/AdminPages/DashboardPage/Dashboard'
 
 const Router = () => {
   return (
@@ -12,7 +13,7 @@ const Router = () => {
         {/* Các path cần chỉnh layout */}
         {/* Admin */}
         <Route path="/admin/*" element={<AdminLayout />} >
-            <Route path="" element={<div>Admin Home</div>} />
+            <Route path="" element={<Dashboard/>} />
             <Route path="user" element={<div>Admin User</div>} />
         </Route>
         {/* User */}
