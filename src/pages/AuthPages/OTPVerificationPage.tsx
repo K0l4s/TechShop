@@ -1,6 +1,6 @@
-import LoginForm from "../../components/Auth/LoginForm";
+import OTPVerificationForm from "../../components/Auth/OTPVerificationForm";
 
-const LoginPage: React.FC = () => {
+const OTPVerificationPage = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
       {/* Header */}
@@ -9,10 +9,13 @@ const LoginPage: React.FC = () => {
         <h1 className="text-2xl font-bold text-blue-600 ml-2">TECHGROUP</h1>
       </header>
 
-      {/* Nội dung chính */}
-      <LoginForm />
+      {/* Tiêu đề */}
+      <h2 className="text-2xl font-bold text-red-600 mb-6">XÁC THỰC OTP</h2>
+
+      {/* Form nhập OTP */}
+      <OTPVerificationForm />
     </div>
   );
 };
 
-export default LoginPage;
+export default OTPVerificationPage;
