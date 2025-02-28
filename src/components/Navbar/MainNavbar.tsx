@@ -1,5 +1,6 @@
 import { BiSearch } from "react-icons/bi"
 import { AiOutlineShoppingCart, AiOutlineHeart } from "react-icons/ai"; // Icon giỏ hàng
+import { Link } from "react-router-dom";
 
 const MainNavbar = () => {
     return (
@@ -26,22 +27,22 @@ const MainNavbar = () => {
             <ul className="flex gap-2">
                 {/* Giỏ hàng */}
                 <li>
-                    <a href="/cart" className="relative">
+                    <Link to="/cart" className="relative">
                         <AiOutlineShoppingCart className="text-2xl text-gray-700 hover:text-blue-600 transition" />
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 rounded-full">4</span>
-                    </a>
+                    </Link>
                 </li>
 
                 {/* Yêu thích */}
                 <li>
-                    <a href="/like-page" className="relative">
+                    <Link to="/like-page" className="relative">
                         <AiOutlineHeart className="text-2xl text-gray-700 hover:text-red-500 transition" />
-                    </a>
+                    </Link>
                 </li>
-                <li><a href="/">Home</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li><a href="/Login">Login</a></li>
+                <li><Link to="/">Home</Link></li>
+                <li><Link to="/about">About</Link></li>
+                <li><Link to="/contact">Contact</Link></li>
+                <li><Link to="/Login">Login</Link></li>
             </ul>
         </nav>
     )
