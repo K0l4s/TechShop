@@ -1,6 +1,6 @@
-import LoginForm from "../../components/Auth/LoginForm";
+import RegisterForm from "../../components/Auth/RegisterForm"; 
 
-const LoginPage: React.FC = () => {
+const RegisterPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-white">
       {/* Header */}
@@ -10,9 +10,15 @@ const LoginPage: React.FC = () => {
       </header>
 
       {/* Nội dung chính */}
-      <LoginForm />
+      <div className="w-full max-w-2xl text-center">
+        {/* Tiêu đề */}
+        <h2 className="text-4xl font-bold text-red-600 mb-8">ĐĂNG KÝ</h2>
+
+        {/* Form đăng ký */}
+        <RegisterForm />
+      </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default RegisterPage;
