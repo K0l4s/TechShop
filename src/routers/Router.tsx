@@ -4,12 +4,20 @@ import AdminLayout from './layout/AdminLayout'
 import LandingPage from '../pages/MainPages/LandingPage/LandingPage'
 import MainLayout from './layout/MainLayout'
 import Dashboard from '../pages/AdminPages/DashboardPage/Dashboard'
+import CartPage from '../pages/MainPages/CartPage/CartPage'
+import UserInformationPage from '../pages/MainPages/UserPage/UserInformationPage'
+import UserManageOrderPage from '../pages/MainPages/UserPage/UserManageOrderPage'
+import LikePage from '../pages/MainPages/LikePage/LikePage'
 
 const Router = () => {
   return (
     <Routes>
         {/* Các path không cần chỉnh layout */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/user-information" element={<UserInformationPage/>} />
+        <Route path="/user-manage-order" element={<UserManageOrderPage/>} />
+        <Route path="/like-page" element={<LikePage/>} />
         {/* Các path cần chỉnh layout */}
         {/* Admin */}
         <Route path="/admin/*" element={<AdminLayout />} >
