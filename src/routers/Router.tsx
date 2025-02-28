@@ -1,3 +1,5 @@
+
+
 import { Route, Routes } from 'react-router-dom'
 import LoginPage from '../pages/AuthPages/LoginPage'
 import RegisterPage from '../pages/AuthPages/RegisterPage'
@@ -11,6 +13,7 @@ import CartPage from '../pages/MainPages/CartPage/CartPage'
 import UserInformationPage from '../pages/MainPages/UserPage/UserInformationPage'
 import UserManageOrderPage from '../pages/MainPages/UserPage/UserManageOrderPage'
 import LikePage from '../pages/MainPages/LikePage/LikePage'
+import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 
 const Router = () => {
   return (
@@ -27,6 +30,7 @@ const Router = () => {
         {/* Các path cần chỉnh layout */}
         {/* Admin */}
         <Route path="/admin/*" element={<AdminLayout />} >
+        <Route path="products" element={<ProductPage />} />
             <Route path="" element={<Dashboard/>} />
             <Route path="user" element={<div>Admin User</div>} />
         </Route>
@@ -35,7 +39,7 @@ const Router = () => {
             <Route path="" element={<LandingPage/>} />
         </Route>
     </Routes>
-  )
-}
+  );
+};
 
-export default Router
+export default Router;
