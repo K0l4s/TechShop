@@ -1,5 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
 import LoginPage from '../pages/AuthPages/LoginPage'
+import RegisterPage from '../pages/AuthPages/RegisterPage'
+import OTPVerificationPage from '../pages/AuthPages/OTPVerificationPage'
+import ForgotPasswordPage from '../pages/AuthPages/ForgotPasswordPage'
 import AdminLayout from './layout/AdminLayout'
 import LandingPage from '../pages/MainPages/LandingPage/LandingPage'
 import MainLayout from './layout/MainLayout'
@@ -14,6 +17,9 @@ const Router = () => {
     <Routes>
         {/* Các path không cần chỉnh layout */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/otp-verification" element={<OTPVerificationPage />} />
+        <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/user-information" element={<UserInformationPage/>} />
         <Route path="/user-manage-order" element={<UserManageOrderPage/>} />
