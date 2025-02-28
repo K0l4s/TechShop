@@ -6,7 +6,7 @@ import AdminNavbar from '../../components/Navbar/AdminNavbar'
 const AdminLayout = () => {
     return (
         <>
-            <div className='flex flex-row'>
+            <div className='flex flex-row bg-gray-100'>
                 <div>
                     <AdminSidebar />
                 </div>

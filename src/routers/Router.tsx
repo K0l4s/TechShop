@@ -25,31 +25,32 @@ import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 const Router = () => {
   return (
     <Routes>
-        {/* Các path không cần chỉnh layout */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/otp-verification" element={<OTPVerificationPage />} />
-        <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/user-information" element={<UserInformationPage/>} />
-        <Route path="/user-manage-order" element={<UserManageOrderPage/>} />
-        <Route path="/like-page" element={<LikePage/>} />
-        {/* Các path cần chỉnh layout */}
-        {/* Admin */}
-        <Route path="/admin/*" element={<AdminLayout />} >
+      {/* Các path không cần chỉnh layout */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/otp-verification" element={<OTPVerificationPage />} />
+      <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+      <Route path="/cart" element={<CartPage />} />
+      <Route path="/user-information" element={<UserInformationPage />} />
+      <Route path="/user-manage-order" element={<UserManageOrderPage />} />
+      <Route path="/like-page" element={<LikePage />} />
+      {/* Các path cần chỉnh layout */}
+      {/* Admin */}
+      <Route path="/admin/*" element={<AdminLayout />} >
         <Route path="products" element={<ProductPage />} />
-            <Route path="" element={<Dashboard/>} />
-           <Route path="users" element={<ListCustomerPage />} />
+        <Route path="" element={<Dashboard />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="users" element={<ListCustomerPage />} />
         <Route path="edit-user" element={<EditCustomerPage />} />
         <Route path="categories" element={<ListCategoriesPage />} />
         <Route path="add-categories" element={<AddCategoryPage />} />
         <Route path="edit-categories" element={<EditCategoryPage />} />
         <Route path="orders" element={<ListOrderPage />} />
-        </Route>
-        {/* User */}
-        <Route path="*" element={<MainLayout />} >
-            <Route path="" element={<LandingPage/>} />
-        </Route>
+      </Route>
+      {/* User */}
+      <Route path="*" element={<MainLayout />} >
+        <Route path="" element={<LandingPage />} />
+      </Route>
     </Routes>
   );
 };

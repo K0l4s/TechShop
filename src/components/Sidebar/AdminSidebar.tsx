@@ -74,9 +74,10 @@ const AdminSidebar = () => {
     >
       <button
         onClick={toggleSidebar}
-        className="text-white focus:outline-none mb-4"
+        className="text-white focus:outline-none mb-4 flex flex-row items-center gap-1 m-auto"
       >
         <FaBars className="text-lg mx-auto" />
+        <p className={`${isExpanded?'block':'hidden'}`}>Menu</p>
       </button>
       <div className="flex flex-col gap-2">
         {links.map((link, index) => (

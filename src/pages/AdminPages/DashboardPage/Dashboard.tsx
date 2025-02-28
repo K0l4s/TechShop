@@ -103,15 +103,33 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold mb-5">Top Products</h1>
           <div className="space-y-4">
             {topproducts.map((product, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 shadow rounded-lg">
-                <img src={product.img} alt={product.name} className="w-12 h-12 object-cover rounded-full" />
+              <div
+                key={index}
+                className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
+                  ? "bg-yellow-400 text-white" // Top 1 - Vàng
+                  : index === 1
+                    ? "bg-gray-300 text-black" // Top 2 - Bạc
+                    : index === 2
+                      ? "bg-amber-700 text-white" // Top 3 - Đồng
+                      : "bg-gray-50"
+                  }`}
+              >
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  className="w-12 h-12 object-cover rounded-full"
+                />
                 <p className="flex-1 text-lg font-medium">{product.name}</p>
                 <span className="text-lg font-bold">{product.sold}</span>
                 <Tooltip text="View more" position="top">
-                  <BiChevronRight size={20} className="cursor-pointer hover:text-blue-500" />
+                  <BiChevronRight
+                    size={20}
+                    className="cursor-pointer hover:text-blue-500"
+                  />
                 </Tooltip>
               </div>
             ))}
+
           </div>
           <div className="mt-3 text-gray-500 flex justify-center">
             <Tooltip text="View more" position="top">
@@ -125,7 +143,15 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold mb-5">Top Customers</h1>
           <div className="space-y-4">
             {topcustomers.map((customer, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-gray-50 shadow rounded-lg">
+              <div key={index} className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
+                ? "bg-yellow-400 text-white" // Top 1 - Vàng
+                : index === 1
+                  ? "bg-gray-300 text-black" // Top 2 - Bạc
+                  : index === 2
+                    ? "bg-amber-700 text-white" // Top 3 - Đồng
+                    : "bg-gray-50"
+                }`}
+              >
                 <img src={customer.img} alt={customer.name} className="w-12 h-12 object-cover rounded-full" />
                 <p className="flex-1 text-lg font-medium">{customer.name}</p>
                 <span className="text-lg font-bold">${customer.paid}</span>
