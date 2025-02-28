@@ -1,4 +1,3 @@
-import { BiMenu } from "react-icons/bi";
 import default_avatar from "../../assets/default_avatar.png";
 import { IoIosArrowDown } from "react-icons/io";
 

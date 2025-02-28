@@ -2,7 +2,6 @@ import React from "react";
 import Sidebar from "../../../components/User/Sidebar";
 import UserForm from "../../../components/User/UserForm";
 import banner from "../../../assets/banner.jpg";
-import MainNavbar from "../../../components/Navbar/MainNavbar"; // Import header
 
 const UserInformation: React.FC = () => {
   return (
