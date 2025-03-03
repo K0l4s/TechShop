@@ -11,6 +11,7 @@ import CartPage from '../pages/MainPages/CartPage/CartPage'
 import UserInformationPage from '../pages/MainPages/UserPage/UserInformationPage'
 import UserManageOrderPage from '../pages/MainPages/UserPage/UserManageOrderPage'
 import LikePage from '../pages/MainPages/LikePage/LikePage'
+import OrderConfirmationPage from '../pages/OrderConfirmationPage/OrderConfirmationPage'
 
 const Router = () => {
   return (
@@ -24,6 +25,7 @@ const Router = () => {
         <Route path="/user-information" element={<UserInformationPage/>} />
         <Route path="/user-manage-order" element={<UserManageOrderPage/>} />
         <Route path="/like-page" element={<LikePage/>} />
+        <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
         {/* Các path cần chỉnh layout */}
         {/* Admin */}
         <Route path="/admin/*" element={<AdminLayout />} >
