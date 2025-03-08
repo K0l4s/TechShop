@@ -54,8 +54,8 @@ const AdminSidebar = () => {
       href: "/admin/products",
       icon: GrCube,
       subLinks: [
-        { name: "All Products", href: "/admin/products" },
-        { name: "Add Product", href: "/admin/products/add" },
+        { name: "Products", href: "/admin/products" },
+        { name: "Discount", href: "/admin/products/discount" },
       ],
     },
     { name: "Categories", href: "/admin/categories", icon: GrClipboard },
@@ -77,7 +77,7 @@ const AdminSidebar = () => {
         className="text-white focus:outline-none mb-4 flex flex-row items-center gap-1 m-auto"
       >
         <FaBars className="text-lg mx-auto" />
-        <p className={`${isExpanded?'block':'hidden'}`}>Menu</p>
+        <p className={`${isExpanded ? "block" : "hidden"}`}>Menu</p>
       </button>
       <div className="flex flex-col gap-2">
         {links.map((link, index) => (

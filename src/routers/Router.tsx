@@ -1,26 +1,25 @@
+import { Route, Routes } from "react-router-dom";
+import LoginPage from "../pages/AuthPages/LoginPage";
+import RegisterPage from "../pages/AuthPages/RegisterPage";
+import OTPVerificationPage from "../pages/AuthPages/OTPVerificationPage";
+import ForgotPasswordPage from "../pages/AuthPages/ForgotPasswordPage";
+import AdminLayout from "./layout/AdminLayout";
+import LandingPage from "../pages/MainPages/LandingPage/LandingPage";
+import MainLayout from "./layout/MainLayout";
+import Dashboard from "../pages/AdminPages/DashboardPage/Dashboard";
 
-
-import { Route, Routes } from 'react-router-dom'
-import LoginPage from '../pages/AuthPages/LoginPage'
-import RegisterPage from '../pages/AuthPages/RegisterPage'
-import OTPVerificationPage from '../pages/AuthPages/OTPVerificationPage'
-import ForgotPasswordPage from '../pages/AuthPages/ForgotPasswordPage'
-import AdminLayout from './layout/AdminLayout'
-import LandingPage from '../pages/MainPages/LandingPage/LandingPage'
-import MainLayout from './layout/MainLayout'
-import Dashboard from '../pages/AdminPages/DashboardPage/Dashboard'
-
-import ListCustomerPage from '../pages/AdminPages/AdminUser/CustomerPage'
-import EditCustomerPage from '../pages/AdminPages/AdminUser/EditUser'
-import ListCategoriesPage from '../pages/AdminPages/AdminCategories/CategoriesPage'
-import AddCategoryPage from '../pages/AdminPages/AdminCategories/AddCategories'
-import EditCategoryPage from '../pages/AdminPages/AdminCategories/EditCategories'
-import ListOrderPage from '../pages/AdminPages/AdminOrders/OrderPage'
-import CartPage from '../pages/MainPages/CartPage/CartPage'
-import UserInformationPage from '../pages/MainPages/UserPage/UserInformationPage'
-import UserManageOrderPage from '../pages/MainPages/UserPage/UserManageOrderPage'
-import LikePage from '../pages/MainPages/LikePage/LikePage'
+import ListCustomerPage from "../pages/AdminPages/AdminUser/CustomerPage";
+import EditCustomerPage from "../pages/AdminPages/AdminUser/EditUser";
+import ListCategoriesPage from "../pages/AdminPages/AdminCategories/CategoriesPage";
+import AddCategoryPage from "../pages/AdminPages/AdminCategories/AddCategories";
+import EditCategoryPage from "../pages/AdminPages/AdminCategories/EditCategories";
+import ListOrderPage from "../pages/AdminPages/AdminOrders/OrderPage";
+import CartPage from "../pages/MainPages/CartPage/CartPage";
+import UserInformationPage from "../pages/MainPages/UserPage/UserInformationPage";
+import UserManageOrderPage from "../pages/MainPages/UserPage/UserManageOrderPage";
+import LikePage from "../pages/MainPages/LikePage/LikePage";
 import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
+import DiscountPage from "../pages/AdminPages/DiscountPage/DiscountPage";
 
 const Router = () => {
   return (
@@ -36,8 +35,9 @@ const Router = () => {
       <Route path="/like-page" element={<LikePage />} />
       {/* Các path cần chỉnh layout */}
       {/* Admin */}
-      <Route path="/admin/*" element={<AdminLayout />} >
+      <Route path="/admin/*" element={<AdminLayout />}>
         <Route path="products" element={<ProductPage />} />
+        <Route path="products/discount" element={<DiscountPage />} />
         <Route path="" element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="users" element={<ListCustomerPage />} />
@@ -48,7 +48,7 @@ const Router = () => {
         <Route path="orders" element={<ListOrderPage />} />
       </Route>
       {/* User */}
-      <Route path="*" element={<MainLayout />} >
+      <Route path="*" element={<MainLayout />}>
         <Route path="" element={<LandingPage />} />
       </Route>
     </Routes>
