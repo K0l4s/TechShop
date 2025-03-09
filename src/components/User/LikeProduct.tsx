@@ -16,6 +16,7 @@ const LikeProduct = () => {
     { id: 2, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
     { id: 3, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
     { id: 4, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
+    { id: 5, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
   ]);
 
   // Hàm xóa sản phẩm khi click vào icon thùng rác
