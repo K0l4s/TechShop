@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import HinhQuangCao from "../../assets/HinhQuangCaoDoc.jpg";
+import { useNavigate } from "react-router-dom";
+
 
 interface Product {
   id: number;
@@ -16,6 +18,8 @@ const Cart: React.FC = () => {
     { id: 3, name: "Sản phẩm C", price: 3000000, quantity: 1, image: "sp-c.jpg" },
     { id: 4, name: "Sản phẩm D", price: 4000000, quantity: 1, image: "sp-d.jpg" },
   ]);
+
+  const navigate = useNavigate();
 
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
 
@@ -166,6 +170,7 @@ const Cart: React.FC = () => {
       </p>
       <button
         disabled={selectedProducts.length === 0}
+        onClick={() => navigate("/order-confirmation")}
         className="bg-green-500 text-white font-bold px-4 py-2 rounded w-full mt-2"
       >
         Đặt hàng
