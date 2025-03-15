@@ -5,8 +5,6 @@ export const SERVER_PORT = import.meta.env.VITE_SERVER_PORT;
 export const SERVER_DOMAIN = import.meta.env.VITE_SERVER_DOMAIN;
 export const BaseApi = `http://${SERVER_DOMAIN}:${SERVER_PORT}`;
 
-// export const BaseApi = "https://destined-fly-rested.ngrok-free.app";
-// export const BaseApi = "https://525b-2402-800-63b6-96c5-801f-41b5-9d40-7623.ngrok-free.app"
 export const axiosInstance = axios.create({
     baseURL: BaseApi,
     headers: {
