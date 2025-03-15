@@ -59,6 +59,15 @@ const UserForm: React.FC = () => {
             name="dob"
             value={formData.dob}
             onChange={handleChange}
+            onInput={(e) => {
+              const input = e.target as HTMLInputElement; 
+              let value = input.value;
+              let parts = value.split("-");
+              if (parts[0] && parts[0].length > 4) {
+                parts[0] = parts[0].slice(0, 4); // Giới hạn năm tối đa 4 chữ số
+                input.value = parts.join("-");
+              }
+            }}
             className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
