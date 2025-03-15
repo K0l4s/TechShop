@@ -1,16 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
-import LoginPage from '../pages/AuthPages/LoginPage'
-import RegisterPage from '../pages/AuthPages/RegisterPage'
-import OTPVerificationPage from '../pages/AuthPages/OTPVerificationPage'
-import ForgotPasswordPage from '../pages/AuthPages/ForgotPasswordPage'
-import AdminLayout from './layout/AdminLayout'
-import LandingPage from '../pages/MainPages/LandingPage/LandingPage'
-import MainLayout from './layout/MainLayout'
-import Dashboard from '../pages/AdminPages/DashboardPage/Dashboard'
-import CartPage from '../pages/MainPages/CartPage/CartPage'
-import UserInformationPage from '../pages/MainPages/UserPage/UserInformationPage'
-import UserManageOrderPage from '../pages/MainPages/UserPage/UserManageOrderPage'
-import LikePage from '../pages/MainPages/LikePage/LikePage'
+
 import OrderConfirmationPage from '../pages/OrderConfirmationPage/OrderConfirmationPage'
 import ProductDetailPage from '../pages/ProductDetailPage/ProductDetailPage'
 import { Route, Routes } from "react-router-dom";
