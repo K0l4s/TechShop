@@ -19,4 +19,15 @@ export interface RegisterRequest {
   export interface VerifyOTPResponse {
     message: string;
   }
+
+  export interface LoginRequest {
+    email: string;
+    password: string;
+  }
+  
+  export interface LoginResponse {
+    accessToken: string;
+    refreshToken: string;
+  }
+  
   
