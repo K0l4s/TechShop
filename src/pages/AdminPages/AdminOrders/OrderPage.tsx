@@ -85,14 +85,14 @@ const ListOrderPage: React.FC = () => {
 
             {/* Orders Table */}
             <table className="min-w-full table-auto border-collapse bg-white shadow-lg rounded-lg">
-                <thead className="bg-gray-100">
+                <thead className="bg-gray-200">
                     <tr>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Mã đơn hàng</th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Khách hàng</th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Địa chỉ</th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Số điện thoại</th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Giá</th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Mã đơn hàng</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Khách hàng</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Địa chỉ</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Số điện thoại</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Giá</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">
                             Thanh toán
                             <select
                                 className="ml-2 py-1 px-2 border rounded-md"
@@ -104,7 +104,7 @@ const ListOrderPage: React.FC = () => {
                                 <option value="Chưa thanh toán">Chưa thanh toán</option>
                             </select>
                         </th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">
                             Trạng thái
                             <select
                                 className="ml-2 py-1 px-2 border rounded-md"
@@ -116,12 +116,12 @@ const ListOrderPage: React.FC = () => {
                                 <option value="Giao hàng thành công">Giao hàng thành công</option>
                             </select>
                         </th>
-                        <th className="py-2 px-4 border-b text-left text-sm font-medium">Thao tác</th>
+                        <th className="py-2 px-4 border-b text-left text-sm font-bold">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     {filteredOrders.map((order) => (
-                        <tr key={order.orderCode} className="hover:bg-gray-50">
+                        <tr key={order.orderCode} className="hover:bg-purple-50">
                             <td className="py-2 px-4 border-b text-sm">{order.orderCode}</td>
                             <td className="py-2 px-4 border-b text-sm">{order.customerName}</td>
                             <td className="py-2 px-4 border-b text-sm">{order.address}</td>
