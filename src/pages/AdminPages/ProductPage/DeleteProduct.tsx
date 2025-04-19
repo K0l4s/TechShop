@@ -1,9 +1,5 @@
 import React from "react";
-
-interface DeleteProductProps {
-  handleClose: () => void;
-  handleDelete: () => void;
-}
+import { DeleteProductProps } from "../../../models/Product";
 
 const DeleteProduct: React.FC<DeleteProductProps> = ({
   handleClose,

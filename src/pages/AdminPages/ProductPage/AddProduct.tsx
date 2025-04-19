@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { ProductService } from "../../../services/ProductService";
-
-interface AddProductProps {
-  handleClose: () => void;
-  setProducts: React.Dispatch<React.SetStateAction<any[]>>;
-}
+import { AddProductProps } from "../../../models/Product";
 
 const AddProduct: React.FC<AddProductProps> = ({
   handleClose,

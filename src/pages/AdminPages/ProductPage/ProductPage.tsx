@@ -3,18 +3,7 @@ import AddProduct from "./AddProduct";
 import EditProduct from "./EditProduct";
 import DeleteProduct from "./DeleteProduct";
 import { ProductService } from "../../../services/ProductService";
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  salePrice?: number;
-  stock: number;
-  active: boolean;
-  categoryId: number;
-  brandId: number;
-}
+import { Product } from "../../../models/Product";
 
 const ProductPage = () => {
   const [products, setProducts] = useState<Product[]>([]);

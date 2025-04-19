@@ -1,23 +1,6 @@
 import React, { useState } from "react";
 import { ProductService } from "../../../services/ProductService";
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  salePrice?: number;
-  stock: number;
-  active: boolean;
-  categoryId: number;
-  brandId: number;
-}
-
-interface EditProductProps {
-  product: Product;
-  handleClose: () => void;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-}
+import { EditProductProps, Product } from "../../../models/Product";
 
 const EditProduct: React.FC<EditProductProps> = ({
   product,
