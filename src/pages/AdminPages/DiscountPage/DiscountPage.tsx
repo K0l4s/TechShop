@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DiscountService } from "../../../services/DiscountService";
 import AddDiscount from "./AddDiscount";
 import EditDiscount from "./EditDiscount";
-import DeleteDiscount from "./DeleteDiscount"; // Import component DeleteDiscount
+import DeleteDiscount from "./DeleteDiscount";
 
 interface Discount {
   id: number;
@@ -11,16 +11,17 @@ interface Discount {
   quantity: number;
   startDate: string;
   endDate: string;
+  active: boolean;
 }
 
 const DiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingDiscount, setEditingDiscount] = useState<Discount | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Trạng thái modal xóa
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [discountToDelete, setDiscountToDelete] = useState<Discount | null>(
     null
-  ); // Mã giảm giá cần xóa
+  );
 
   useEffect(() => {
     fetchDiscounts();
@@ -51,8 +52,8 @@ const DiscountPage: React.FC = () => {
       {showAddModal && (
         <AddDiscount
           onSuccess={() => {
-            setShowAddModal(false); // Đóng modal sau khi thêm thành công
-            fetchDiscounts(); // Cập nhật danh sách
+            setShowAddModal(false);
+            fetchDiscounts();
           }}
         />
       )}
@@ -71,9 +72,13 @@ const DiscountPage: React.FC = () => {
       {/* Modal Xóa Mã Giảm Giá */}
       {showDeleteModal && discountToDelete && (
         <DeleteDiscount
-          handleClose={() => setShowDeleteModal(false)} // Đóng modal
+          handleClose={() => setShowDeleteModal(false)}
           discountId={discountToDelete.id}
-          token="your-auth-token-here" // Chèn token ở đây nếu cần thiết
+          token="your-auth-token-here"
+          onDeleteSuccess={() => {
+            setShowDeleteModal(false);
+            fetchDiscounts();
+          }}
         />
       )}
 
@@ -105,7 +110,10 @@ const DiscountPage: React.FC = () => {
           </thead>
           <tbody>
             {discounts.map((discount) => (
-              <tr key={discount.id}>
+              <tr
+                key={discount.id}
+                className={`${discount.active ? "bg-white" : "bg-red-200"}`}
+              >
                 <td className="py-2 px-4 border text-center">{discount.id}</td>
                 <td className="py-2 px-4 border text-center">
                   {discount.code}
@@ -124,21 +132,28 @@ const DiscountPage: React.FC = () => {
                 </td>
                 <td className="py-2 px-4 border text-center">
                   <div className="flex justify-center gap-6">
-                    <button
-                      onClick={() => setEditingDiscount(discount)}
-                      className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition duration-300"
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      onClick={() => {
-                        setDiscountToDelete(discount);
-                        setShowDeleteModal(true);
-                      }}
-                      className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
-                    >
-                      Xóa
-                    </button>
+                    {discount.active ? (
+                      <>
+                        <button
+                          onClick={() => setEditingDiscount(discount)}
+                          className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition duration-300"
+                        >
+                          Sửa
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setDiscountToDelete(discount);
+                            setShowDeleteModal(true);
+                          }}
+                          className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                        >
+                          Xóa
+                        </button>
+                      </>
+                    ) : (
+                      <p className="text-red-500 font-bold">Đã Xóa</p>
+                    )}
                   </div>
                 </td>
               </tr>

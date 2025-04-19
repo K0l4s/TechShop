@@ -5,18 +5,19 @@ interface DeleteDiscountProps {
   handleClose: () => void;
   discountId: number; // ID của mã giảm giá
   token: string; // Token xác thực
+  onDeleteSuccess: () => void; // Callback để cập nhật danh sách
 }
 
 const DeleteDiscount: React.FC<DeleteDiscountProps> = ({
   handleClose,
   discountId,
-  token,
+  onDeleteSuccess,
 }) => {
-  const handleDelete = async (id: number, token: string) => {
+  const handleDelete = async (id: number) => {
     try {
-      await DiscountService.deleteDiscount(id, token);
-      // Call any action to update the UI or refetch data if needed
-      handleClose(); // Close the modal after successful delete
+      await DiscountService.deleteDiscount(id);
+      onDeleteSuccess(); // Gọi callback để cập nhật danh sách
+      handleClose(); // Đóng modal sau khi xóa thành công
     } catch (error) {
       console.error("Lỗi khi xóa mã giảm giá:", error);
     }
@@ -31,7 +32,7 @@ const DeleteDiscount: React.FC<DeleteDiscountProps> = ({
         </p>
         <div className="flex justify-center gap-4">
           <button
-            onClick={() => handleDelete(discountId, token)} // Truyền token khi gọi hàm xóa
+            onClick={() => handleDelete(discountId)}
             className="bg-red-700 text-white font-bold px-4 py-2 rounded-lg hover:bg-red-800 transition duration-300"
           >
             Xóa

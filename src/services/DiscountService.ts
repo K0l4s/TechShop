@@ -64,13 +64,10 @@ export const DiscountService = {
     return response.data.body;
   },
 
-  deleteDiscount: async (id: number, token: string) => {
+  deleteDiscount: async (id: number) => {
     try {
       await axiosInstanceAuth.delete("/api/v1/admin/discounts/del", {
         params: { id },
-        headers: {
-          Authorization: `Bearer ${token}`, // Thêm token vào headers
-        },
       });
     } catch (error) {
       console.error("Lỗi khi xóa mã giảm giá:", error);
