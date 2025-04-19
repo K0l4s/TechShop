@@ -1,58 +1,71 @@
-import { useState } from "react";
-
-interface Product {
-  id: string;
-  name: string;
-  code: string;
-  category: string;
-  brand: string;
-  price: number;
-  warranty: string;
-  description: string;
-  image: string;
-}
+import { useState, useEffect } from "react";
 import AddProduct from "./AddProduct";
 import EditProduct from "./EditProduct";
 import DeleteProduct from "./DeleteProduct";
+import { ProductService } from "../../../services/ProductService";
+
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  salePrice?: number;
+  stock: number;
+  active: boolean;
+  categoryId: number;
+  brandId: number;
+}
 
 const ProductPage = () => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [showDeleteProduct, setShowDeleteProduct] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleAddProduct = () => {
-    setShowAddProduct(true);
-  };
+  // Fetch products from backend
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await ProductService.fetchProducts();
+        setProducts(response);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const handleCloseAddProduct = () => {
-    setShowAddProduct(false);
-  };
-
+  const handleAddProduct = () => setShowAddProduct(true);
+  const handleCloseAddProduct = () => setShowAddProduct(false);
   const handleEditProduct = (product: Product) => {
     setSelectedProduct(product);
     setShowEditProduct(true);
   };
-
   const handleCloseEditProduct = () => {
     setShowEditProduct(false);
     setSelectedProduct(null);
   };
-
   const handleDeleteProduct = (product: Product) => {
     setSelectedProduct(product);
     setShowDeleteProduct(true);
   };
-
   const handleCloseDeleteProduct = () => {
     setShowDeleteProduct(false);
     setSelectedProduct(null);
   };
 
-  const handleConfirmDeleteProduct = () => {
-    // Handle delete product logic here
-    setShowDeleteProduct(false);
-    setSelectedProduct(null);
+  const handleConfirmDeleteProduct = async () => {
+    if (selectedProduct) {
+      try {
+        await ProductService.deleteProduct(selectedProduct.id);
+        setProducts(products.filter((p) => p.id !== selectedProduct.id));
+        setShowDeleteProduct(false);
+        setSelectedProduct(null);
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
+    }
   };
 
   return (
@@ -66,11 +79,18 @@ const ProductPage = () => {
           + Sản Phẩm
         </button>
       </div>
-      {showAddProduct && <AddProduct handleClose={handleCloseAddProduct} />}
+
+      {showAddProduct && (
+        <AddProduct
+          handleClose={handleCloseAddProduct}
+          setProducts={setProducts}
+        />
+      )}
       {showEditProduct && selectedProduct && (
         <EditProduct
           handleClose={handleCloseEditProduct}
           product={selectedProduct}
+          setProducts={setProducts}
         />
       )}
       {showDeleteProduct && selectedProduct && (
@@ -79,144 +99,61 @@ const ProductPage = () => {
           handleDelete={handleConfirmDeleteProduct}
         />
       )}
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border">
           <thead>
             <tr>
               <th className="py-2 px-4 border font-normal">ID</th>
-              <th className="py-2 px-4 border font-normal">Mã Sản Phẩm</th>
               <th className="py-2 px-4 border font-normal">Tên Sản Phẩm</th>
-              <th className="py-2 px-4 border font-normal">Loại Sản Phẩm</th>
-              <th className="py-2 px-4 border font-normal">Thương Hiệu</th>
+              <th className="py-2 px-4 border font-normal">Mô Tả</th>
               <th className="py-2 px-4 border font-normal">Giá</th>
-              <th className="py-2 px-4 border font-normal">Giới Thiệu</th>
-              <th className="py-2 px-4 border font-normal">Hình Ảnh</th>
+              <th className="py-2 px-4 border font-normal">Giá Khuyến Mãi</th>
+              <th className="py-2 px-4 border font-normal">Số Lượng</th>
+              <th className="py-2 px-4 border font-normal">Danh Mục</th>
+              <th className="py-2 px-4 border font-normal">Thương Hiệu</th>
+              <th className="py-2 px-4 border font-normal">Đang Bán</th>
               <th className="py-2 px-4 border font-normal">Thao Tác</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="py-2 px-4 border">1</td>
-              <td className="py-2 px-4 border">SP001</td>
-              <td className="py-2 px-4 border">RAM</td>
-              <td className="py-2 px-4 border">DDR4</td>
-              <td className="py-2 px-4 border">Kingston</td>
-              <td className="py-2 px-4 border">850.000 VND</td>
-              <td className="py-2 px-4 border">
-                Ram Laptop Kingsdom 8GB Bus 3200
-              </td>
-              <td className="py-2 px-4 border text-center">
-                <div className="flex justify-center items-center">
-                  <img
-                    src="/image/ddr4.jpg"
-                    sizes="(max-width: 640px) 100vw, 640px"
-                    className="w-16 h-16 object-cover"
-                  />
-                </div>
-              </td>
-              <td className="py-2 px-4 border text-center">
-                <div className="flex justify-center gap-6">
-                  <button
-                    onClick={() =>
-                      handleEditProduct({
-                        id: "1",
-                        name: "RAM",
-                        code: "SP001",
-                        category: "DDR4",
-                        brand: "Kingston",
-                        price: 850000,
-                        warranty: "2 năm",
-                        description: "Ram Laptop Kingsdom 8GB Bus 3200",
-                        image: "/image/ddr4.jpg",
-                      })
-                    }
-                    className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition duration-300"
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleDeleteProduct({
-                        id: "1",
-                        name: "RAM",
-                        code: "SP001",
-                        category: "DDR4",
-                        brand: "Kingston",
-                        price: 850000,
-                        warranty: "2 năm",
-                        description: "Ram Laptop Kingsdom 8GB Bus 3200",
-                        image: "/image/ddr4.jpg",
-                      })
-                    }
-                    className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="py-2 px-4 border">2</td>
-              <td className="py-2 px-4 border">SP002</td>
-              <td className="py-2 px-4 border">RAM</td>
-              <td className="py-2 px-4 border">DDR5</td>
-              <td className="py-2 px-4 border">Kingston</td>
-              <td className="py-2 px-4 border">1.960.000 VND</td>
-              <td className="py-2 px-4 border">
-                Ram Laptop Kingsdom 16GB Bus 3200
-              </td>
-              <td className="py-2 px-4 border text-center">
-                <div className="flex justify-center items-center">
-                  <img
-                    src="/image/ddr5.jpg"
-                    sizes="(max-width: 640px) 100vw, 640px"
-                    className="w-16 h-16 object-cover"
-                  />
-                </div>
-              </td>
-              <td className="py-2 px-4 border text-center">
-                <div className="flex justify-center gap-6">
-                  <button
-                    onClick={() =>
-                      handleEditProduct({
-                        id: "2",
-                        name: "RAM",
-                        code: "SP002",
-                        category: "DDR5",
-                        brand: "Kingston",
-                        price: 1960000,
-                        warranty: "2 năm",
-                        description: "Ram Laptop Kingsdom 16GB Bus 3200",
-                        image: "/image/ddr5.jpg",
-                      })
-                    }
-                    className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition duration-300"
-                  >
-                    Sửa
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      handleDeleteProduct({
-                        id: "2",
-                        name: "SSD",
-                        code: "SP002",
-                        category: "NVMe",
-                        brand: "Samsung",
-                        price: 1200000,
-                        warranty: "5 năm",
-                        description: "SSD Samsung 970 EVO Plus 500GB NVMe",
-                        image: "/image/ssd.jpg",
-                      })
-                    }
-                    className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
-                  >
-                    Xóa
-                  </button>
-                </div>
-              </td>
-            </tr>
-            {/* Thêm các hàng khác */}
+            {products.map((product) => (
+              <tr key={product.id}>
+                <td className="py-2 px-4 border">{product.id}</td>
+                <td className="py-2 px-4 border">{product.name}</td>
+                <td className="py-2 px-4 border">{product.description}</td>
+                <td className="py-2 px-4 border">
+                  {product.price.toLocaleString("vi-VN")} VND
+                </td>
+                <td className="py-2 px-4 border">
+                  {product.salePrice
+                    ? product.salePrice.toLocaleString("vi-VN") + " VND"
+                    : "Không"}
+                </td>
+                <td className="py-2 px-4 border">{product.stock}</td>
+                <td className="py-2 px-4 border">{product.categoryId}</td>
+                <td className="py-2 px-4 border">{product.brandId}</td>
+                <td className="py-2 px-4 border">
+                  {product.active ? "✅ Đang bán" : "❌ Ngừng bán"}
+                </td>
+                <td className="py-2 px-4 border text-center">
+                  <div className="flex justify-center gap-6">
+                    <button
+                      onClick={() => handleEditProduct(product)}
+                      className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:bg-blue-600 transition duration-300"
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      onClick={() => handleDeleteProduct(product)}
+                      className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
