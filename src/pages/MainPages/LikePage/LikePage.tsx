@@ -1,6 +1,5 @@
 import LikeProduct from "../../../components/User/LikeProduct";
 import Sidebar from "../../../components/User/Sidebar";
-import MainNavbar from "../../../components/Navbar/MainNavbar";
 
 const LikePage = () => {
   return (

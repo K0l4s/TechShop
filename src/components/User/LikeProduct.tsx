@@ -1,50 +1,73 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
-
-// Định nghĩa kiểu dữ liệu cho sản phẩm
-interface Product {
-  id: number;
-  name: string;
-  price: string;
-  image: string;
-}
+import { likeService } from "../../services/LikeService";
+import { LikeProduct as Product } from "../../models/LikeProduct";
 
 const LikeProduct = () => {
-  // Danh sách sản phẩm yêu thích
-  const [products, setProducts] = useState<Product[]>([
-    { id: 1, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
-    { id: 2, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
-    { id: 3, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
-    { id: 4, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
-    { id: 5, name: "Tên sản phẩm", price: "Giá tiền", image: "/image/sp.jpg" },
-  ]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Hàm xóa sản phẩm khi click vào icon thùng rác
-  const removeProduct = (id: number) => {
-    setProducts(products.filter(product => product.id !== id));
+  const fetchFavorites = async () => {
+    try {
+      const data = await likeService.getFavorites();
+      console.log("Fetched favorites:", data);
+      setProducts(data);
+    } catch (error) {
+      console.error("Không thể tải sản phẩm yêu thích:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const removeProduct = async (id: number) => {
+    try {
+      await likeService.removeFromFavorites(id);
+      setProducts((prev) => prev.filter((product) => product.product_id !== id));
+    } catch (error) {
+      console.error("Không thể xóa sản phẩm yêu thích:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  if (loading) return <p>Đang tải sản phẩm yêu thích...</p>;
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      {products.map(product => (
-        <div key={product.id} className="flex items-center bg-white shadow-md rounded-lg p-4 w-[400px]">
-          {/* Ảnh sản phẩm */}
-          <div className="w-16 h-16 bg-gray-800 text-white flex items-center justify-center rounded-md font-bold text-lg">
-            SP
-          </div>
+      {products.length === 0 ? (
+        <p className="text-gray-500">Chưa có sản phẩm yêu thích.</p>
+      ) : (
+        products.map((product) => (
+          <div
+            key={product.product_id}
+            className="flex items-center bg-white shadow-md rounded-lg p-4 w-[400px]"
+          >
+            <div className="w-16 h-16 bg-gray-800 text-white flex items-center justify-center rounded-md font-bold text-sm">
+              {product.name ? product.name.split(" ")[0] : "N/A"}
+            </div>
 
-          {/* Thông tin sản phẩm */}
-          <div className="flex-1 ml-4">
-            <p className="text-lg font-medium">{product.name}</p>
-            <p className="text-red-500 font-semibold">{product.price}</p>
-          </div>
+            <div className="flex-1 ml-4">
+              <p className="text-base font-semibold">{product.name}</p>
+              <p className="text-gray-500 line-through">
+                Giá gốc: {product.price.toLocaleString()}₫
+              </p>
+              <p className="text-red-500 font-bold">
+                Giá khuyến mãi: {product.sale_price.toLocaleString()}₫
+              </p>
+            </div>
 
-          {/* Icon thùng rác */}
-          <button onClick={() => removeProduct(product.id)} className="text-red-500 hover:text-red-700">
-            <FaTrash size={18} />
-          </button>
-        </div>
-      ))}
+            <button
+              onClick={() => removeProduct(product.product_id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              <FaTrash size={18} />
+            </button>
+          </div>
+        ))
+      )}
     </div>
   );
 };
