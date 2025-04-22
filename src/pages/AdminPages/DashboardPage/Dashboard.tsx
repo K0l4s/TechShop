@@ -62,48 +62,6 @@ const topcustomers = [
 ]
 const Dashboard = () => {
   const [topproducts, setTopProducts] = useState<topProducts[]>([
-    //Demo data
-    {
-      id: 1,
-      name: "Product 1",
-      description: "Description 1",
-      price: 100,
-      salePrice: 80,
-      stock: 50,
-    },
-    {
-      id: 2,
-      name: "Product 2",
-      description: "Description 2",
-      price: 200,
-      salePrice: 150,
-      stock: 30,
-    },
-    {
-      id: 3,
-      name: "Product 3",
-      description: "Description 3",
-      price: 300,
-      salePrice: 250,
-      stock: 20,
-    },
-    {
-      id: 4,
-      name: "Product 4",
-      description: "Description 4",
-      price: 400,
-      salePrice: 350,
-      stock: 10,
-    },
-    {
-      id: 5,
-      name: "Product 5",
-      description: "Description 5",
-      price: 500,
-      salePrice: 450,
-      stock: 5,
-    },
-    // Add more products as needed
   ])
   useEffect(() => {
     const fetchTopProducts = async () => {
@@ -166,32 +124,40 @@ const Dashboard = () => {
         <section className="w-full shadow-xl rounded-xl p-5 text-center bg-white">
           <h1 className="text-3xl font-bold mb-5">Top Products</h1>
           <div className="space-y-4">
+            {topproducts.length === 0 ? (
+              <div className="flex items-center justify-center p-3 shadow rounded-lg bg-gray-50 text-gray-500">
+                <p>No products available</p>
+              </div>
+            ) : null}
             {topproducts.map((product, index) => (
               <div
                 key={index}
                 className={`flex items-center  justify-between p-3 shadow rounded-lg 
                   ${index === 0
-                  ? "bg-yellow-400 text-white"
-                  : index === 1
-                    ? "bg-gray-300 text-black"
-                    : index === 2
-                      ? "bg-amber-700 text-white"
-                      : "bg-gray-50"
+                    ? "bg-yellow-400 text-white"
+                    : index === 1
+                      ? "bg-gray-300 text-black"
+                      : index === 2
+                        ? "bg-amber-700 text-white"
+                        : "bg-gray-50"
                   }
                   `}
               >
                 <div className="relative">
                   {index === 0 || index === 1 || index === 2 ? (
-                    <img src="https://cdn-icons-png.flaticon.com/512/4453/4453262.png" alt="" className="absolute w-5 right-0 -top-1" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/4453/4453262.png" alt="" className="w-12 h-12 object-cover rounded-full" />
                   ) : null}
-                  <img
+                  {/* <img
                     src="https://cdn-icons-png.flaticon.com/512/4453/4453262.png"
                     alt={product.name}
-                    className="w-12 h-12 object-cover rounded-full"
-                  />
+                    className="w-12 h-12 object-cover rounded-full"S
+                  /> */}
                 </div>
                 <p className="flex-1 text-lg font-medium">{product.name}</p>
-                <span className="text-lg font-bold">{product.stock}</span>
+                {/* <div className="flex flex-col -right-2 items-center justify-between">
+                  <span className="text-sm text-gray-500">Stock</span>
+                  <span className="text-lg font-bold">{product.stock}</span>
+                </div> */}
                 <Tooltip text="View more" position="top">
                   <BiChevronRight
                     size={20}
@@ -213,6 +179,11 @@ const Dashboard = () => {
         <section className="w-full shadow-xl rounded-xl p-5 text-center bg-white">
           <h1 className="text-3xl font-bold mb-5">Top Customers</h1>
           <div className="space-y-4">
+          {topcustomers.length === 0 ? (
+              <div className="flex items-center justify-center p-3 shadow rounded-lg bg-gray-50 text-gray-500">
+                <p>No user available</p>
+              </div>
+            ) : null}
             {topcustomers.map((customer, index) => (
               <div key={index} className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
                 ? "bg-yellow-400 text-white" // Top 1 - Vàng
