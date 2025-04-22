@@ -3,6 +3,7 @@ import Cookie from "js-cookie";
 import { RegisterRequest, RegisterResponse, VerifyOTPRequest, VerifyOTPResponse } from "../models/Auth";
 import { LoginRequest, LoginResponse } from "../models/Auth";
 
+
 export const authenticateApi = {
   login: async (data: LoginRequest): Promise<LoginResponse> => {
     try {

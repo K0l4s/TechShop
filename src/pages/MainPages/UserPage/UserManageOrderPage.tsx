@@ -1,6 +1,12 @@
 import React from "react";
 import Sidebar from "../../../components/User/Sidebar";
-import OrderCard from "../../../components/User/OrderCard"; // Component hiển thị danh sách đơn hàng
+import OrderCard from "../../../components/User/OrderCard"; // Component hiển thị đơn hàng
+
+// Dữ liệu mẫu của đơn hàng
+const orderProducts = [
+  { name: "Sản phẩm A", quantity: 2, price: 50000 },
+  { name: "Sản phẩm B", quantity: 1, price: 75000 },
+];
 
 const UserManageOrder: React.FC = () => {
   return (

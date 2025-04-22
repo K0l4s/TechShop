@@ -67,7 +67,7 @@ const RegisterForm: React.FC = () => {
       const response = await authenticateApi.register(requestData);
       console.log("🎉 Phản hồi từ server:", response);
 
-      if (response?.email) {
+      if (response?.message?.includes("Successfully registered")) {
         localStorage.setItem("registeredEmail", formData.email);
         navigate("/otp-verification");
       } else {
