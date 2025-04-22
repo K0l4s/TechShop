@@ -1,7 +1,7 @@
 
 import OrderConfirmationPage from '../pages/OrderConfirmationPage/OrderConfirmationPage'
 import ProductDetailPage from '../pages/ProductDetailPage/ProductDetailPage'
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import LoginPage from "../pages/AuthPages/LoginPage";
 import RegisterPage from "../pages/AuthPages/RegisterPage";
 import OTPVerificationPage from "../pages/AuthPages/OTPVerificationPage";
@@ -23,6 +23,7 @@ import UserManageOrderPage from "../pages/MainPages/UserPage/UserManageOrderPage
 import LikePage from "../pages/MainPages/LikePage/LikePage";
 import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 import DiscountPage from "../pages/AdminPages/DiscountPage/DiscountPage";
+import OrderAnalyst from '../pages/AdminPages/DashboardPage/OrderAnalyst';
 
 const Router = () => {
   return (
@@ -41,9 +42,16 @@ const Router = () => {
       {/* Các path cần chỉnh layout */}
       {/* Admin */}
       <Route path="/admin/*" element={<AdminLayout />} >
-        <Route path="" element={<Dashboard />} />
+        <Route index element={<Dashboard />} />
+        <Route path="analyst/*" element={<Outlet />} >
+          <Route path="order" element={<OrderAnalyst />} />
+          <Route path="product" element={<div>Admin Product</div>} />
+          <Route path="category" element={<div>Admin Category</div>} />
+          <Route path="discount" element={<div>Admin Discount</div>} />
+        </Route>
         <Route path="user" element={<div>Admin User</div>} />
       </Route>
+
       {/* User */}
       <Route path="*" element={<MainLayout />} >
         <Route path="" element={<LandingPage />} />

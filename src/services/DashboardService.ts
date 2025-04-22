@@ -1,6 +1,4 @@
 import { axiosInstance, axiosInstanceAuth } from "../utils/axiosIntance";
-import Cookie from "js-cookie";
-import { LoginRequest, LoginResponse } from "../models/Auth";
 
 
 export const dashboardApi = {
@@ -15,4 +13,14 @@ export const dashboardApi = {
             throw error;
         }
     },
+    getTotalTodayOrders: async () => {
+        try {
+            const response = await axiosInstance.get("/api/v1/orders/day")
+            console.log(response.data)
+            return response.data;
+        } catch (error: any) {
+            console.error("❌ Lỗi đăng nhập:", error.response?.data || error.message);
+            throw error;
+        }
+    }
 };
