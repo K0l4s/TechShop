@@ -1,34 +1,37 @@
 import { BiChevronDown, BiChevronRight } from "react-icons/bi"
 import RevenueChart from "../../../components/Admin/Chart/RevenueChart"
 import Tooltip from "../../../components/Custom/Tooltip"
+import { useEffect, useState } from "react"
+import { topProducts } from "../../../models/Dashboard"
+import { dashboardApi } from "../../../services/DashboardService"
 
-const topproducts = [
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Product 1",
-    sold: 100,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Product 2",
-    sold: 200,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Product 3",
-    sold: 300,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Product 4",
-    sold: 400,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Product 5",
-    sold: 500,
-  }
-]
+// const topproducts = [
+//   {
+//     img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
+//     name: "Product 1",
+//     sold: 100,
+//   },
+//   {
+//     img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
+//     name: "Product 2",
+//     sold: 200,
+//   },
+//   {
+//     img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
+//     name: "Product 3",
+//     sold: 300,
+//   },
+//   {
+//     img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
+//     name: "Product 4",
+//     sold: 400,
+//   },
+//   {
+//     img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
+//     name: "Product 5",
+//     sold: 500,
+//   }
+// ]
 
 const topcustomers = [
   {
@@ -58,6 +61,22 @@ const topcustomers = [
   }
 ]
 const Dashboard = () => {
+  const [topproducts, setTopProducts] = useState<topProducts[]>([
+  ])
+  useEffect(() => {
+    const fetchTopProducts = async () => {
+      try {
+        const response = await dashboardApi.topProducts()
+        // const data = await response.json()
+        console.log(response)
+        setTopProducts(response.body)
+      } catch (error) {
+        console.error("Error fetching top products:", error)
+      }
+    }
+    fetchTopProducts()
+  }
+  , [])
   return (
     <div>
       <div className="flex flex-wrap gap-10 justify-center">
@@ -93,7 +112,10 @@ const Dashboard = () => {
           <p className="text-md font-medium text-gray-500">Customers</p>
         </div>
       </div>
-      <div className="w-10/12 m-auto h-96 mt-10 bg-white shadow-md rounded-xl">
+      <div className="w-10/12 m-auto mt-10 bg-white shadow-md rounded-xl">
+        <h1 className="text-3xl font-bold p-5 text-center">Revenue Chart</h1>
+
+        <div className="w-7/12 m-auto border border-slate-500 border-dashed rounded-3xl border-sky-500/40 mb-5"></div>
         <RevenueChart />
       </div>
       {/* top product & top customer */}
@@ -102,25 +124,40 @@ const Dashboard = () => {
         <section className="w-full shadow-xl rounded-xl p-5 text-center bg-white">
           <h1 className="text-3xl font-bold mb-5">Top Products</h1>
           <div className="space-y-4">
+            {topproducts.length === 0 ? (
+              <div className="flex items-center justify-center p-3 shadow rounded-lg bg-gray-50 text-gray-500">
+                <p>No products available</p>
+              </div>
+            ) : null}
             {topproducts.map((product, index) => (
               <div
                 key={index}
-                className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
-                  ? "bg-yellow-400 text-white" // Top 1 - Vàng
-                  : index === 1
-                    ? "bg-gray-300 text-black" // Top 2 - Bạc
-                    : index === 2
-                      ? "bg-amber-700 text-white" // Top 3 - Đồng
-                      : "bg-gray-50"
-                  }`}
+                className={`flex items-center  justify-between p-3 shadow rounded-lg 
+                  ${index === 0
+                    ? "bg-yellow-400 text-white"
+                    : index === 1
+                      ? "bg-gray-300 text-black"
+                      : index === 2
+                        ? "bg-amber-700 text-white"
+                        : "bg-gray-50"
+                  }
+                  `}
               >
-                <img
-                  src={product.img}
-                  alt={product.name}
-                  className="w-12 h-12 object-cover rounded-full"
-                />
+                <div className="relative">
+                  {index === 0 || index === 1 || index === 2 ? (
+                    <img src="https://cdn-icons-png.flaticon.com/512/4453/4453262.png" alt="" className="w-12 h-12 object-cover rounded-full" />
+                  ) : null}
+                  {/* <img
+                    src="https://cdn-icons-png.flaticon.com/512/4453/4453262.png"
+                    alt={product.name}
+                    className="w-12 h-12 object-cover rounded-full"S
+                  /> */}
+                </div>
                 <p className="flex-1 text-lg font-medium">{product.name}</p>
-                <span className="text-lg font-bold">{product.sold}</span>
+                {/* <div className="flex flex-col -right-2 items-center justify-between">
+                  <span className="text-sm text-gray-500">Stock</span>
+                  <span className="text-lg font-bold">{product.stock}</span>
+                </div> */}
                 <Tooltip text="View more" position="top">
                   <BiChevronRight
                     size={20}
@@ -142,6 +179,11 @@ const Dashboard = () => {
         <section className="w-full shadow-xl rounded-xl p-5 text-center bg-white">
           <h1 className="text-3xl font-bold mb-5">Top Customers</h1>
           <div className="space-y-4">
+          {topcustomers.length === 0 ? (
+              <div className="flex items-center justify-center p-3 shadow rounded-lg bg-gray-50 text-gray-500">
+                <p>No user available</p>
+              </div>
+            ) : null}
             {topcustomers.map((customer, index) => (
               <div key={index} className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
                 ? "bg-yellow-400 text-white" // Top 1 - Vàng

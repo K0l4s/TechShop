@@ -1,9 +1,24 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
+import { authenticateApi } from "../../services/AuthenticationService";
 
 const LoginForm: React.FC = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    try {
+      const response = await authenticateApi.login({ email, password });
+      console.log("🎉 Đăng nhập thành công:", response);
+      navigate("/");
+    } catch (error) {
+      console.error("🚨 Đăng nhập thất bại:", error);
+      alert("Email hoặc mật khẩu không đúng!");
+    }
+  };
 
   return (
     <div className="w-full max-w-2xl text-center">
@@ -16,6 +31,8 @@ const LoginForm: React.FC = () => {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full border border-gray-300 p-4 text-lg rounded outline-none"
           />
         </div>
@@ -24,18 +41,21 @@ const LoginForm: React.FC = () => {
           <input
             type="password"
             placeholder="Mật khẩu"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             className="w-full border border-gray-300 p-4 text-lg rounded outline-none"
           />
         </div>
 
-        <button className="w-full bg-red-600 text-white py-4 text-xl font-bold rounded">
+        <button
+          className="w-full bg-red-600 text-white py-4 text-xl font-bold rounded"
+          onClick={handleLogin}
+        >
           Đăng Nhập
         </button>
       </div>
 
-      <p className="text-red-600 mt-4 text-lg cursor-pointer"
-        onClick={() => navigate("/forgotpassword")}
-      >
+      <p className="text-red-600 mt-4 text-lg cursor-pointer" onClick={() => navigate("/forgotpassword")}>
         Quên mật khẩu?
       </p>
 
@@ -49,10 +69,7 @@ const LoginForm: React.FC = () => {
         </button>
       </div>
 
-      <p
-        className="mt-6 text-lg text-blue-600 cursor-pointer"
-        onClick={() => navigate("/register")}
-      >
+      <p className="mt-6 text-lg text-blue-600 cursor-pointer" onClick={() => navigate("/register")}>
         Bạn chưa có tài khoản? <span className="font-bold">Đăng ký ngay!</span>
       </p>
     </div>
