@@ -1,6 +1,5 @@
 import React from "react";
 import Sidebar from "../../../components/User/Sidebar";
-import MainNavbar from "../../../components/Navbar/MainNavbar"; // Header
 import OrderCard from "../../../components/User/OrderCard"; // Component hiển thị đơn hàng
 
 // Dữ liệu mẫu của đơn hàng
