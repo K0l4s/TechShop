@@ -18,7 +18,7 @@ const DeleteProduct: React.FC<DeleteProductProps> = ({
             Hủy
           </button>
           <button
-            onClick={handleDelete}
+            onClick={handleDelete} // Gọi hàm soft-delete
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
           >
             Xóa

@@ -6,23 +6,41 @@ export const ProductService = {
     return response.data.body;
   },
 
-  addProduct: async (product: any) => {
+  addProduct: async (product: FormData) => {
     const response = await axiosInstanceAuth.post(
-      "/api/v1/admin/product",
-      product
+      "/api/v1/admin/product/create",
+      product,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     return response.data.body;
   },
 
-  updateProduct: async (id: number, product: any) => {
+  updateProduct: async (id: number, data: FormData) => {
     const response = await axiosInstanceAuth.put(
       `/api/v1/admin/product/${id}`,
-      product
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
     return response.data.body;
   },
-
-  deleteProduct: async (id: number) => {
-    await axiosInstanceAuth.delete(`/api/v1/admin/product/${id}`);
+  softDeleteProduct: async (id: number) => {
+    const response = await axiosInstanceAuth.put(
+      `/api/v1/admin/product/${id}/soft-delete`
+    );
+    return response.data.body;
+  },
+  restoreProduct: async (id: number) => {
+    const response = await axiosInstanceAuth.put(
+      `/api/v1/admin/product/${id}/restore`
+    );
+    return response.data.body;
   },
 };

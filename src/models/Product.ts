@@ -1,3 +1,23 @@
+export interface ProductImage {
+  id: number;
+  imageUrl: string;
+  altText?: string;
+}
+
+export interface ProductAttribute {
+  id: number;
+  attName: string;
+  attValue: string;
+}
+
+export interface ProductVariant {
+  id: number;
+  sku: string;
+  variantName: string;
+  price: number;
+  stock: number;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -8,6 +28,14 @@ export interface Product {
   active: boolean;
   categoryId: number;
   brandId: number;
+  images: string[];
+  attributes: { attName: string; attValue: string }[];
+  variants: {
+    sku: string;
+    variantName: string;
+    price: number;
+    stock: number;
+  }[];
 }
 export interface AddProductProps {
   handleClose: () => void;
@@ -17,9 +45,9 @@ export interface DeleteProductProps {
   handleClose: () => void;
   handleDelete: () => void;
 }
-
 export interface EditProductProps {
   product: Product;
   handleClose: () => void;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  token: string;
 }
