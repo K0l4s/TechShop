@@ -23,6 +23,7 @@ import UserManageOrderPage from "../pages/MainPages/UserPage/UserManageOrderPage
 import LikePage from "../pages/MainPages/LikePage/LikePage";
 import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 import DiscountPage from "../pages/AdminPages/DiscountPage/DiscountPage";
+import ResetPasswordPage from '../pages/AuthPages/ResetPasswordPage';
 
 const Router = () => {
   return (
@@ -32,6 +33,7 @@ const Router = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/otp-verification" element={<OTPVerificationPage />} />
         <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
+        <Route path="/forgotpassword/verified" element={<ResetPasswordPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/user-information" element={<UserInformationPage/>} />
         <Route path="/user-manage-order" element={<UserManageOrderPage/>} />

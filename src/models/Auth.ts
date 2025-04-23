@@ -30,4 +30,15 @@ export interface RegisterRequest {
     refreshToken: string;
   }
   
+  export interface ForgotPasswordRequest {
+    email: string;
+  }
+  
+  export interface ForgotPasswordResponse {}
+
+  export interface ResetPasswordRequest {
+    password: string;
+    token: string;
+  }
+
   
