@@ -109,7 +109,6 @@ const ProductPage = () => {
           handleClose={handleCloseEditProduct}
           product={selectedProduct}
           setProducts={setProducts}
-          token={""} // Thay thế bằng token thực tế nếu cần
         />
       )}
       {showDeleteProduct && selectedProduct && (
@@ -127,7 +126,9 @@ const ProductPage = () => {
             >
               ×
             </button>
-            <h2 className="text-xl font-bold mb-4">Chi Tiết Sản Phẩm</h2>
+            <h2 className="text-xl font-bold mb-6 text-center text-gray-800">
+              Chi Tiết Sản Phẩm
+            </h2>
             <VariantsAttribute product={selectedProduct} />
           </div>
         </div>

@@ -32,7 +32,6 @@ const EditProduct: React.FC<EditProductProps> = ({
   product,
   handleClose,
   setProducts,
-  token,
 }) => {
   const [formData, setFormData] = useState<Product>({ ...product });
   const [images, setImages] = useState<FileList | null>(null);

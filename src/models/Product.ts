@@ -28,14 +28,9 @@ export interface Product {
   active: boolean;
   categoryId: number;
   brandId: number;
-  images: string[];
-  attributes: { attName: string; attValue: string }[];
-  variants: {
-    sku: string;
-    variantName: string;
-    price: number;
-    stock: number;
-  }[];
+  images: ProductImage[];
+  attributes: ProductAttribute[];
+  variants: ProductVariant[];
 }
 export interface AddProductProps {
   handleClose: () => void;
@@ -44,10 +39,4 @@ export interface AddProductProps {
 export interface DeleteProductProps {
   handleClose: () => void;
   handleDelete: () => void;
-}
-export interface EditProductProps {
-  product: Product;
-  handleClose: () => void;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  token: string;
 }
