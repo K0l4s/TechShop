@@ -3,9 +3,9 @@ import { DiscountService } from "../../../services/DiscountService";
 
 interface DeleteDiscountProps {
   handleClose: () => void;
-  discountId: number; // ID của mã giảm giá
-  token: string; // Token xác thực
-  onDeleteSuccess: () => void; // Callback để cập nhật danh sách
+  discountId: number;
+  token: string;
+  onDeleteSuccess: () => void;
 }
 
 const DeleteDiscount: React.FC<DeleteDiscountProps> = ({
@@ -16,8 +16,8 @@ const DeleteDiscount: React.FC<DeleteDiscountProps> = ({
   const handleDelete = async (id: number) => {
     try {
       await DiscountService.deleteDiscount(id);
-      onDeleteSuccess(); // Gọi callback để cập nhật danh sách
-      handleClose(); // Đóng modal sau khi xóa thành công
+      onDeleteSuccess();
+      handleClose();
     } catch (error) {
       console.error("Lỗi khi xóa mã giảm giá:", error);
     }

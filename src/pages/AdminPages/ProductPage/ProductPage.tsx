@@ -109,6 +109,7 @@ const ProductPage = () => {
           handleClose={handleCloseEditProduct}
           product={selectedProduct}
           setProducts={setProducts}
+          token="your-token-value"
         />
       )}
       {showDeleteProduct && selectedProduct && (

@@ -18,15 +18,14 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
   discount,
 }) => {
   const [formData, setFormData] = useState({
-    code: discount.code || "", // Fallback to empty string if discount.code is undefined
-    quantity: discount.quantity || 0, // Fallback to 0 if discount.quantity is undefined
-    value: discount.value || 0, // Fallback to 0 if discount.value is undefined
-    startDate: discount.startDate || "", // Fallback to empty string if discount.startDate is undefined
-    endDate: discount.endDate || "", // Fallback to empty string if discount.endDate is undefined
+    code: discount.code || "",
+    quantity: discount.quantity || 0,
+    value: discount.value || 0,
+    startDate: discount.startDate || "",
+    endDate: discount.endDate || "",
   });
 
   useEffect(() => {
-    // This ensures formData is updated when discount prop changes
     setFormData({
       code: discount.code || "",
       quantity: discount.quantity || 0,
@@ -44,14 +43,12 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
     }));
   };
 
-  // Convert date to a format including time as 00:00:00 (start) or 23:59:59 (end)
   const toLocalDateTime = (dateString: string, isStartDate: boolean) => {
     const date = new Date(
       dateString + (isStartDate ? "T00:00:00" : "T23:59:59")
     );
 
-    // Điều chỉnh thời gian để bù múi giờ
-    const timezoneOffset = date.getTimezoneOffset() * 60000; // Chuyển phút sang milliseconds
+    const timezoneOffset = date.getTimezoneOffset() * 60000;
     const adjustedDate = new Date(date.getTime() - timezoneOffset);
 
     return adjustedDate.toISOString().slice(0, 19);
@@ -71,7 +68,7 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
 
     try {
       await DiscountService.updateDiscount(discount.id, updatedFormData);
-      handleClose(); // Close modal and reload the discount list
+      handleClose();
     } catch (error) {
       console.error("Lỗi khi cập nhật mã giảm giá:", error);
     }

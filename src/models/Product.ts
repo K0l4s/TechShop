@@ -40,3 +40,9 @@ export interface DeleteProductProps {
   handleClose: () => void;
   handleDelete: () => void;
 }
+export interface EditProductProps {
+  product: Product;
+  handleClose: () => void;
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  token: string;
+}

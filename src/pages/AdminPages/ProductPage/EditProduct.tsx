@@ -1,32 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ProductService } from "../../../services/ProductService";
-
-interface Product {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  salePrice: number;
-  stock: number;
-  categoryId: string;
-  brandId: string;
-  active: boolean;
-  images: string[];
-  attributes: { attName: string; attValue: string }[];
-  variants: {
-    sku: string;
-    variantName: string;
-    price: number;
-    stock: number;
-  }[];
-}
-
-export interface EditProductProps {
-  product: Product;
-  handleClose: () => void;
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
-  token: string;
-}
+import { Product, EditProductProps } from "../../../models/Product";
 
 const EditProduct: React.FC<EditProductProps> = ({
   product,
@@ -83,13 +57,16 @@ const EditProduct: React.FC<EditProductProps> = ({
   };
 
   const handleAddAttribute = () => {
-    setAttributes([...attributes, { attName: "", attValue: "" }]);
+    setAttributes([
+      ...attributes,
+      { id: Date.now(), attName: "", attValue: "" },
+    ]);
   };
 
   const handleAddVariant = () => {
     setVariants([
       ...variants,
-      { sku: "", variantName: "", price: 0, stock: 0 },
+      { id: Date.now(), sku: "", variantName: "", price: 0, stock: 0 },
     ]);
   };
 
@@ -101,7 +78,9 @@ const EditProduct: React.FC<EditProductProps> = ({
     productData.append("name", formData.name);
     productData.append("description", formData.description);
     productData.append("price", formData.price.toString());
-    productData.append("salePrice", formData.salePrice.toString());
+    if (formData.salePrice !== undefined) {
+      productData.append("salePrice", formData.salePrice.toString());
+    }
     productData.append("stock", formData.stock.toString());
     productData.append("categoryId", formData.categoryId.toString());
     productData.append("brandId", formData.brandId.toString());
@@ -114,31 +93,45 @@ const EditProduct: React.FC<EditProductProps> = ({
     }
 
     // Chỉ gửi attributes mới
-    const newAttributes = attributes.filter(
-      (attr) =>
-        !initialAttributes.some(
-          (initialAttr) =>
-            initialAttr.attName === attr.attName &&
-            initialAttr.attValue === attr.attValue
-        )
-    );
+    const newAttributes = attributes
+      .filter(
+        (attr) =>
+          !initialAttributes.some(
+            (initialAttr) =>
+              initialAttr.attName === attr.attName &&
+              initialAttr.attValue === attr.attValue
+          )
+      )
+      .map(({ attName, attValue }) => ({ attName, attValue }));
     if (newAttributes.length > 0) {
       productData.append("attributesJson", JSON.stringify(newAttributes));
     }
 
     // Chỉ gửi variants mới
-    const newVariants = variants.filter(
-      (variant) =>
-        !initialVariants.some(
-          (initialVariant) =>
-            initialVariant.sku === variant.sku &&
-            initialVariant.variantName === variant.variantName &&
-            initialVariant.price === variant.price &&
-            initialVariant.stock === variant.stock
-        )
-    );
+    const newVariants = variants
+      .filter(
+        (variant) =>
+          !initialVariants.some(
+            (initialVariant) =>
+              initialVariant.sku === variant.sku &&
+              initialVariant.variantName === variant.variantName &&
+              initialVariant.price === variant.price &&
+              initialVariant.stock === variant.stock
+          )
+      )
+      .map(({ sku, variantName, price, stock }) => ({
+        sku,
+        variantName,
+        price,
+        stock,
+      }));
     if (newVariants.length > 0) {
       productData.append("variantsJson", JSON.stringify(newVariants));
+    }
+    // In dữ liệu ra console
+    console.log("Dữ liệu gửi đi:");
+    for (const [key, value] of productData.entries()) {
+      console.log(`${key}:`, value);
     }
 
     try {
