@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 import { orderService } from "../../services/OrderService";
 
 interface OrderItem {
@@ -48,6 +49,7 @@ const OrderCard = () => {
   const fetchOrders = async () => {
     try {
       const response = (await orderService.getUserOrders()) as OrdersResponse;
+      console.log("Fetched orders:", response);
       if (response.success && response.body && response.body.items) {
         setOrders(response.body.items);
       }
@@ -70,7 +72,10 @@ const OrderCard = () => {
   return (
     <div className="flex flex-col items-center space-y-4">
       {orders.map((order: Order) => (
-        <div key={order.id} className="border p-4 rounded-lg w-[400px] shadow-md">
+        <div
+          key={order.id}
+          className="border p-4 rounded-lg w-[400px] shadow-md"
+        >
           <h3 className="font-bold text-lg">Đơn hàng #{order.id}</h3>
           <p>Trạng thái: {order.status}</p>
           <p>Tổng giá: {order.totalPrice.toLocaleString()}₫</p>

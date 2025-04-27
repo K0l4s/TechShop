@@ -20,10 +20,11 @@ const LikeProduct = () => {
     }
   };
 
-  const removeProduct = async (id: number) => {
+  // Sử dụng favorite record id để xóa
+  const removeProduct = async (favoriteId: number) => {
     try {
-      await likeService.removeFromFavorites(id);
-      setProducts((prev) => prev.filter((product) => product.product_id !== id));
+      await likeService.removeFromFavorites(favoriteId);
+      setProducts((prev) => prev.filter((product) => product.id !== favoriteId));
     } catch (error) {
       console.error("Không thể xóa sản phẩm yêu thích:", error);
     }
@@ -42,25 +43,26 @@ const LikeProduct = () => {
       ) : (
         products.map((product) => (
           <div
-            key={product.product_id}
+            key={product.id} // sử dụng favorite record id làm key
             className="flex items-center bg-white shadow-md rounded-lg p-4 w-[400px]"
           >
+            {/* Placeholder hình ảnh */}
             <div className="w-16 h-16 bg-gray-800 text-white flex items-center justify-center rounded-md font-bold text-sm">
               {product.name ? product.name.split(" ")[0] : "N/A"}
             </div>
 
+            {/* Thông tin sản phẩm (chỉ hiển thị tên và giá gốc) */}
             <div className="flex-1 ml-4">
-              <p className="text-base font-semibold">{product.name}</p>
-              <p className="text-gray-500 line-through">
-                Giá gốc: {product.price.toLocaleString()}₫
-              </p>
-              <p className="text-red-500 font-bold">
-                Giá khuyến mãi: {product.sale_price.toLocaleString()}₫
+              <p className="text-base font-semibold">{product.name || "N/A"}</p>
+              <p className="text-green-500 font-bold">
+                Giá:{" "}
+                {product.price !== undefined ? product.price.toLocaleString() : "N/A"}₫
               </p>
             </div>
 
+            {/* Nút xóa yêu thích */}
             <button
-              onClick={() => removeProduct(product.product_id)}
+              onClick={() => removeProduct(product.id)}
               className="text-red-500 hover:text-red-700"
             >
               <FaTrash size={18} />
