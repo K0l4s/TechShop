@@ -4,6 +4,8 @@ import { AiOutlineShoppingCart, AiOutlineHeart } from "react-icons/ai";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
+import { Badge } from "@mui/material";
+import { CiBellOn } from "react-icons/ci";
 
 const MainNavbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,6 +56,12 @@ const MainNavbar = () => {
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/about">About</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
+                <li><Link to="/delivery-order">Tra cứu đơn hàng</Link></li>
+                <li><Link to="/noti">
+                <Badge badgeContent={1} color="error">
+                    <CiBellOn size={20} className={"text-blue-600"} />
+                </Badge>
+                </Link></li>
 
                 {!isLoggedIn ? (
                     <li><Link to="/Login">Login</Link></li>

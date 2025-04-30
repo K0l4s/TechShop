@@ -24,6 +24,8 @@ import LikePage from "../pages/MainPages/LikePage/LikePage";
 import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 import DiscountPage from "../pages/AdminPages/DiscountPage/DiscountPage";
 import OrderAnalyst from '../pages/AdminPages/DashboardPage/OrderAnalyst';
+import DeliveryOrder from '../pages/MainPages/DeliveryOrder';
+import Notifications from '../pages/MainPages/Notification';
 
 const Router = () => {
   return (
@@ -39,6 +41,8 @@ const Router = () => {
       <Route path="/like-page" element={<LikePage />} />
       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
       <Route path="/product-detail" element={<ProductDetailPage />} />
+      <Route path="/noti" element={<Notifications />} />
+      <Route path="/delivery-order" element={<DeliveryOrder />} />
       {/* Các path cần chỉnh layout */}
       {/* Admin */}
       <Route path="/admin/*" element={<AdminLayout />} >
