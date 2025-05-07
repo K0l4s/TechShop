@@ -4,6 +4,8 @@ import { AiOutlineShoppingCart, AiOutlineHeart } from "react-icons/ai";
 import { FaUserCircle } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Cookie from "js-cookie";
+import { Badge } from "@mui/material";
+import { CiBellOn } from "react-icons/ci";
 
 const MainNavbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -54,6 +56,12 @@ const MainNavbar = () => {
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/about">About</Link></li>
                 <li><Link to="/contact">Contact</Link></li>
+                <li><Link to="/delivery-order">Tra cứu đơn hàng</Link></li>
+                <li><Link to="/noti">
+                <Badge badgeContent={1} color="error">
+                    <CiBellOn size={20} className={"text-blue-600"} />
+                </Badge>
+                </Link></li>
 
                 {!isLoggedIn ? (
                     <li><Link to="/Login">Login</Link></li>
@@ -66,7 +74,7 @@ const MainNavbar = () => {
                             <ul className="absolute right-0 mt-2 w-48 bg-white border shadow-lg rounded-lg">
                                 <li><Link to="/user-profile" className="block px-4 py-2 hover:bg-gray-100">Xem thông tin</Link></li>
                                 <li><Link to="/orders" className="block px-4 py-2 hover:bg-gray-100">Xem đơn hàng</Link></li>
-                                <li><Link to="/reset-password" className="block px-4 py-2 hover:bg-gray-100">Đặt lại mật khẩu</Link></li>
+                                <li><Link to="/forgotpassword" className="block px-4 py-2 hover:bg-gray-100">Đặt lại mật khẩu</Link></li>
                                 <li>
                                     <button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">
                                         Đăng xuất

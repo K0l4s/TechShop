@@ -1,7 +1,7 @@
 import { axiosInstance } from "../utils/axiosIntance";
 import Cookie from "js-cookie";
-import { RegisterRequest, RegisterResponse, VerifyOTPRequest, VerifyOTPResponse } from "../models/Auth";
-import { LoginRequest, LoginResponse } from "../models/Auth";
+import { RegisterRequest, RegisterResponse, VerifyOTPRequest, VerifyOTPResponse, ForgotPasswordRequest, ForgotPasswordResponse } from "../models/Auth";
+import { LoginRequest, LoginResponse, ResetPasswordRequest } from "../models/Auth";
 
 
 export const authenticateApi = {
@@ -52,6 +52,39 @@ export const authenticateApi = {
   logout: async () => {
     return axiosInstance.get(`/api/v1/demo`);
   },
+
+  resetPassword: async (data: ResetPasswordRequest): Promise<{ message: string }> => {
+    try {
+      console.log("🔐 Gửi yêu cầu đặt lại mật khẩu:", data);
+      const response = await axiosInstance.put<{ message: string }>(
+        `/api/v1/auth/reset-password`,
+        data
+      );
+      console.log("✅ Đặt lại mật khẩu thành công:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Lỗi đặt lại mật khẩu:", error.response?.data || error.message);
+      throw error;
+    }
+  },  
+  
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
+    try {
+      console.log("📧 Gửi yêu cầu quên mật khẩu:", data);
+      const response = await axiosInstance.post<ForgotPasswordResponse>(
+        `/api/v1/auth/forgot-password`,
+        data
+      );
+      console.log("✅ Gửi email thành công:", response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error("❌ Lỗi gửi email:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  
+
 
   verifyOTP: async (data: VerifyOTPRequest): Promise<VerifyOTPResponse> => {
     try {
