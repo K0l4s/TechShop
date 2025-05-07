@@ -23,7 +23,11 @@ import UserManageOrderPage from "../pages/MainPages/UserPage/UserManageOrderPage
 import LikePage from "../pages/MainPages/LikePage/LikePage";
 import ProductPage from "../pages/AdminPages/ProductPage/ProductPage";
 import DiscountPage from "../pages/AdminPages/DiscountPage/DiscountPage";
+
+import ResetPasswordPage from '../pages/AuthPages/ResetPasswordPage';
+
 import OrderAnalyst from '../pages/AdminPages/DashboardPage/OrderAnalyst';
+
 
 const Router = () => {
   return (
@@ -31,6 +35,7 @@ const Router = () => {
       {/* Các path không cần chỉnh layout */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgotpassword/verified" element={<ResetPasswordPage />} />
       <Route path="/otp-verification" element={<OTPVerificationPage />} />
       <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
       <Route path="/cart" element={<CartPage />} />
@@ -48,6 +53,7 @@ const Router = () => {
           <Route path="product" element={<div>Admin Product</div>} />
           <Route path="category" element={<div>Admin Category</div>} />
           <Route path="discount" element={<div>Admin Discount</div>} />
+
         </Route>
         <Route path="user" element={<div>Admin User</div>} />
       </Route>
