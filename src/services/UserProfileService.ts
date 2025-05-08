@@ -1,33 +1,30 @@
+// src/services/ProfileService.ts
+
 import { axiosInstanceAuth } from "../utils/axiosIntance";
-import { GetUserProfileResponse, UpdateUserProfileRequest, UpdateUserProfileResponse } from "../models/UserProfile";
 
-const getUserIdFromStorage = (): string => {
-  // Nếu không tìm thấy userId, trả về default "5"
-  return localStorage.getItem("userId") || "5";
-};
-
-export const userInformationService = {
-  // Lấy thông tin user dựa trên userId
-  getMyProfile: async (): Promise<GetUserProfileResponse> => {
-    const userId = getUserIdFromStorage();
+export const ProfileService = {
+  // Lấy thông tin profile của người dùng dựa vào userId  
+  getProfile: async (userId: number): Promise<any> => {
     try {
       const response = await axiosInstanceAuth.get(`/api/v1/users/profile/${userId}`);
-      return response.data;
-    } catch (error: any) {
-      console.error("Lỗi khi lấy thông tin người dùng:", error.response?.data || error);
+      console.log("getProfile response:", response.data);
+      // Kiểm tra các cấu trúc dữ liệu khác nhau:
+      // Nếu API bọc dữ liệu trong body, data hoặc trả về trực tiếp dữ liệu
+      return response.data.body || response.data.data || response.data;
+    } catch (error) {
+      console.error("Error in getProfile:", error);
       throw error;
     }
   },
 
-  // Cập nhật thông tin user dựa trên userId
-  updateMyProfile: async (data: UpdateUserProfileRequest): Promise<UpdateUserProfileResponse> => {
-    const userId = getUserIdFromStorage();
+  // Cập nhật thông tin profile của người dùng
+  updateProfile: async (userId: number, profileData: any): Promise<any> => {
     try {
-      const response = await axiosInstanceAuth.put(`/api/v1/users/profile/update/${userId}`, data);
-      return response.data;
-    } catch (error: any) {
-      console.error("Lỗi khi cập nhật thông tin người dùng:", error.response?.data || error);
+      const response = await axiosInstanceAuth.put(`/api/v1/users/profile/update/${userId}`, profileData);
+      return response.data.body || response.data.data || response.data;
+    } catch (error) {
+      console.error("Error in updateProfile:", error);
       throw error;
     }
-  },
+  }
 };

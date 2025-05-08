@@ -28,23 +28,17 @@ export interface RegisterRequest {
   export interface LoginResponse {
     accessToken: string;
     refreshToken: string;
-    // Thêm user để chứa thông tin của người dùng
-    user?: {
-    id: number;
-    email: string;
-    username?: string;
-    // các thuộc tính khác nếu cần
-    };
   }
   
-  export interface MeResponse {
-    success: boolean;
-    message: string;
-    body: {
-      id: number;
-      email: string;
-      username?: string;
-      // thêm các field khác nếu cần
-    };
+  export interface ForgotPasswordRequest {
+    email: string;
   }
+  
+  export interface ForgotPasswordResponse {}
+
+  export interface ResetPasswordRequest {
+    password: string;
+    token: string;
+  }
+
   

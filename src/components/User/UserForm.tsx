@@ -1,41 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { userInformationService } from "../../services/UserProfileService";
+// src/components/User/UserForm.tsx
 
-interface ProfileData {
-  username: string;
-  email: string;
-  phone: string;
-}
+import React, { useState, useEffect } from "react";
+import { ProfileService } from "../../services/UserProfileService"; // điều chỉnh đường dẫn nếu cần
 
 const UserForm: React.FC = () => {
-  const [formData, setFormData] = useState<ProfileData>({
+  // Lấy userId từ localStorage (nếu không có thì fallback giá trị 5)
+  const storedUserId = localStorage.getItem("userId");
+  const userId = storedUserId ? Number(storedUserId) : 5;
+
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
-    phone: "",
+    phone: ""
   });
-  const [loading, setLoading] = useState(true);
-  const [errorMsg, setErrorMsg] = useState("");
 
+  // Lấy thông tin profile khi component mount
   useEffect(() => {
-    const fetchProfile = async () => {
+    if (!userId) {
+      console.error("Không tìm thấy user id hợp lệ");
+      return;
+    }
+
+    const loadProfile = async () => {
       try {
-        const response = await userInformationService.getMyProfile();
-        console.log("Profile response:", response);
+        const profile = await ProfileService.getProfile(userId);
+        if (!profile) {
+          console.error("Profile is undefined - Kiểm tra lại response của API");
+          return;
+        }
         setFormData({
-          username: response?.user?.username || "",
-          email: response?.user?.email || "",
-          phone: response?.user?.phone || "",
+          username: profile.username || "",
+          email: profile.email || "",
+          phone: profile.phone || ""
         });
       } catch (error) {
-        console.error("Không thể tải thông tin người dùng:", error);
-        setErrorMsg("Lỗi khi tải thông tin người dùng.");
-      } finally {
-        setLoading(false);
+        console.error("Error fetching profile:", error);
       }
     };
 
-    fetchProfile();
-  }, []);
+    loadProfile();
+  }, [userId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -44,22 +48,19 @@ const UserForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await userInformationService.updateMyProfile(formData);
-      console.log("Cập nhật thành công:", response);
+      const updatedProfile = await ProfileService.updateProfile(userId, formData);
+      console.log("Profile updated successfully:", updatedProfile);
     } catch (error) {
-      console.error("Cập nhật thông tin người dùng thất bại:", error);
+      console.error("Error updating profile:", error);
     }
   };
-
-  if (loading) return <p>Đang tải thông tin người dùng...</p>;
-  if (errorMsg) return <p>{errorMsg}</p>;
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mx-auto">
       <h2 className="text-2xl font-bold mb-3 text-gray-800">Thông tin tài khoản</h2>
       <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
         <div>
-          <label className="block font-bold text-sm text-gray-700">Họ tên</label>
+          <label className="block font-bold text-sm text-gray-700">Username</label>
           <input
             type="text"
             name="username"
@@ -74,8 +75,8 @@ const UserForm: React.FC = () => {
             type="email"
             name="email"
             value={formData.email}
-            disabled
-            className="w-full border px-3 py-2 rounded-md bg-gray-200 cursor-not-allowed"
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           />
         </div>
         <div>

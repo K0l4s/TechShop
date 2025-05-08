@@ -1,74 +1,105 @@
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
-import { likeService } from "../../services/LikeService";
-import { LikeProduct as Product } from "../../models/LikeProduct";
+import { LikeService } from "../../services/LikeService"; // điều chỉnh đường dẫn nếu cần
+
+// Định nghĩa kiểu dữ liệu cho sản phẩm
+interface Product {
+  favorite_id?: number; // nếu API không trả về trường này, biến thành optional
+  id: number;
+  name: string;
+  price: string; // ví dụ: "100000"
+  image?: string;
+}
 
 const LikeProduct = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true); // Thêm trạng thái tải
 
+  // Hàm định dạng giá tiền: "100000" --> "100.000 VNĐ"
+  const formatPrice = (price: string) => {
+    const numberPrice = Number(price);
+    return numberPrice.toLocaleString("vi-VN") + " VNĐ";
+  };
+
+  // Hàm lấy danh sách sản phẩm yêu thích từ API
   const fetchFavorites = async () => {
     try {
-      const data = await likeService.getFavorites();
-      console.log("Fetched favorites:", data);
-      setProducts(data);
-    } catch (error) {
-      console.error("Không thể tải sản phẩm yêu thích:", error);
-      setProducts([]);
+      setLoading(true); // Bắt đầu tải dữ liệu
+      const data = await LikeService.getFavorites(1);
+      // Nếu một sản phẩm không có favorite_id, dùng giá trị của id làm fallback
+      const formattedData = data.map((item: any) => ({
+        ...item,
+        favorite_id: item.favorite_id || item.id,
+      }));
+      setProducts(formattedData);
+    } catch (error: any) {
+      console.error("Lỗi khi lấy danh sách yêu thích:", error.message || error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Kết thúc tải dữ liệu
     }
   };
 
-  // Sử dụng favorite record id để xóa
-  const removeProduct = async (favoriteId: number) => {
-    try {
-      await likeService.removeFromFavorites(favoriteId);
-      setProducts((prev) => prev.filter((product) => product.id !== favoriteId));
-    } catch (error) {
-      console.error("Không thể xóa sản phẩm yêu thích:", error);
-    }
-  };
-
+  // Gọi API ngay khi component được mount
   useEffect(() => {
     fetchFavorites();
   }, []);
 
-  if (loading) return <p>Đang tải sản phẩm yêu thích...</p>;
+  // Hàm xoá sản phẩm khỏi danh sách yêu thích
+  const removeProduct = async (favoriteId: number | undefined) => {
+    if (!favoriteId) {
+      console.error("Favorite id is undefined, không thể xoá sản phẩm này");
+      return;
+    }
+    try {
+      await LikeService.deleteFavorite(favoriteId);
+      setProducts((prevProducts) =>
+        prevProducts.filter(
+          (product) => (product.favorite_id || product.id) !== favoriteId
+        )
+      );
+    } catch (error: any) {
+      console.error(
+        "Lỗi khi xoá sản phẩm yêu thích:",
+        error.response?.data || error.message
+      );
+    }
+  };
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      {products.length === 0 ? (
-        <p className="text-gray-500">Chưa có sản phẩm yêu thích.</p>
+      {loading ? (
+        <p className="text-lg font-medium">Đang tải danh sách sản phẩm...</p>
+      ) : products.length === 0 ? (
+        <p className="text-lg font-medium text-gray-500">
+          Không có sản phẩm yêu thích
+        </p>
       ) : (
-        products.map((product) => (
-          <div
-            key={product.id} // sử dụng favorite record id làm key
-            className="flex items-center bg-white shadow-md rounded-lg p-4 w-[400px]"
-          >
-            {/* Placeholder hình ảnh */}
-            <div className="w-16 h-16 bg-gray-800 text-white flex items-center justify-center rounded-md font-bold text-sm">
-              {product.name ? product.name.split(" ")[0] : "N/A"}
-            </div>
-
-            {/* Thông tin sản phẩm (chỉ hiển thị tên và giá gốc) */}
-            <div className="flex-1 ml-4">
-              <p className="text-base font-semibold">{product.name || "N/A"}</p>
-              <p className="text-green-500 font-bold">
-                Giá:{" "}
-                {product.price !== undefined ? product.price.toLocaleString() : "N/A"}₫
-              </p>
-            </div>
-
-            {/* Nút xóa yêu thích */}
-            <button
-              onClick={() => removeProduct(product.id)}
-              className="text-red-500 hover:text-red-700"
+        products.map((product) => {
+          // Đảm bảo mỗi phần tử có key duy nhất
+          const uniqueKey = product.favorite_id || product.id;
+          return (
+            <div
+              key={uniqueKey}
+              className="flex items-center bg-white shadow-md rounded-lg p-4 w-[400px]"
             >
-              <FaTrash size={18} />
-            </button>
-          </div>
-        ))
+              {/* Hiển thị thông tin sản phẩm */}
+              <div className="flex-1 ml-4">
+                <p className="text-lg font-medium">{product.name}</p>
+                <p className="text-red-500 font-semibold">
+                  {formatPrice(product.price)}
+                </p>
+              </div>
+
+              {/* Icon thùng rác để xoá sản phẩm */}
+              <button
+                onClick={() => removeProduct(product.favorite_id || product.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                <FaTrash size={18} />
+              </button>
+            </div>
+          );
+        })
       )}
     </div>
   );
