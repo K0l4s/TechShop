@@ -3,16 +3,7 @@ import { DiscountService } from "../../../services/DiscountService";
 import AddDiscount from "./AddDiscount";
 import EditDiscount from "./EditDiscount";
 import DeleteDiscount from "./DeleteDiscount";
-
-interface Discount {
-  id: number;
-  code: string;
-  value: number;
-  quantity: number;
-  startDate: string;
-  endDate: string;
-  active: boolean;
-}
+import { Discount } from "../../../models/Discount";
 
 const DiscountPage: React.FC = () => {
   const [discounts, setDiscounts] = useState<Discount[]>([]);
