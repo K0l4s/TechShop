@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useRef } from "react"; //
+
 import {
   Product,
   ProductAttribute,
@@ -13,6 +15,10 @@ interface Props {
 const VariantsAttribute = ({ product }: Props) => {
   const [selectedImage, setSelectedImage] = useState<ProductImage | null>(null);
   const [editingAttr, setEditingAttr] = useState<ProductAttribute | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null); //
+  const [editingImageId, setEditingImageId] = useState<number | null>(null); //
+
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(
     null
   );
@@ -37,6 +43,50 @@ const VariantsAttribute = ({ product }: Props) => {
     setEditingAttr(null);
     setEditingVariant(null);
     setDeletingItem(null);
+  };
+  const handleImageEditClick = (imageId: number) => {
+    setEditingImageId(imageId);
+    fileInputRef.current?.click();
+  };
+
+  const handleImageFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file || editingImageId === null) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const updatedImage = await ProductService.updateProductImage(
+        editingImageId,
+        formData
+      );
+      console.log("Cập nhật ảnh thành công!");
+
+      product.images = product.images.map((img) =>
+        img.id === editingImageId
+          ? { ...img, imageUrl: updatedImage.imageUrl }
+          : img
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật ảnh:", error);
+    } finally {
+      setEditingImageId(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+  const handleDeleteImage = async (imageId: number) => {
+    try {
+      await ProductService.deleteProductImage(imageId);
+      console.log("Xóa ảnh thành công!");
+      product.images = product.images.filter((img) => img.id !== imageId);
+      window.location.reload();
+    } catch (error) {
+      console.error("Lỗi khi xóa ảnh:", error);
+    }
   };
 
   const submitAttributeEdit = async () => {
@@ -102,6 +152,14 @@ const VariantsAttribute = ({ product }: Props) => {
 
   return (
     <div className="space-y-6 p-4 bg-white rounded-xl shadow-md">
+      {/* File input ẩn */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleImageFileChange}
+        className="hidden"
+      />
       {/* Images model */}
       {selectedImage && (
         <div
@@ -132,13 +190,29 @@ const VariantsAttribute = ({ product }: Props) => {
         <h3 className="text-sm font-semibold text-gray-800 mb-2">Hình Ảnh</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {product.images.map((image) => (
-            <div key={image.id} className="relative">
+            <div key={image.id} className="relative group">
               <img
                 src={image.imageUrl}
                 alt={image.altText || "Hình ảnh sản phẩm"}
-                className="w-full h-32 object-cover rounded-md shadow-sm"
+                className="w-full h-32 object-cover rounded-md shadow-sm cursor-pointer"
                 onClick={() => setSelectedImage(image)}
               />
+              <div className="absolute top-1 right-1 flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                <button
+                  onClick={() => handleImageEditClick(image.id)}
+                  className="bg-white p-1 rounded-full shadow text-blue-600 text-sm"
+                  title="Chỉnh sửa ảnh"
+                >
+                  ✎
+                </button>
+                <button
+                  onClick={() => handleDeleteImage(image.id)}
+                  className="bg-white p-1 rounded-full shadow text-red-600 text-sm"
+                  title="Xóa ảnh"
+                >
+                  ✖
+                </button>
+              </div>
             </div>
           ))}
         </div>
