@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { DiscountService } from "../../../services/DiscountService";
 
 interface EditDiscountProps {
   handleClose: () => void;
   discount: {
-    id: string;
+    id: number;
     code: string;
-    name: string;
+    quantity: number;
     value: number;
     startDate: string;
     endDate: string;
-    image: string;
   };
 }
 
@@ -17,64 +17,99 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
   handleClose,
   discount,
 }) => {
-  const [formData, setFormData] = useState(discount);
+  const [formData, setFormData] = useState({
+    code: discount.code || "",
+    quantity: discount.quantity || 0,
+    value: discount.value || 0,
+    startDate: discount.startDate || "",
+    endDate: discount.endDate || "",
+  });
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLInputElement
-    >
-  ) => {
+  useEffect(() => {
+    setFormData({
+      code: discount.code || "",
+      quantity: discount.quantity || 0,
+      value: discount.value || 0,
+      startDate: discount.startDate || "",
+      endDate: discount.endDate || "",
+    });
+  }, [discount]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "quantity" || name === "value" ? Number(value) : value,
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const toLocalDateTime = (dateString: string, isStartDate: boolean) => {
+    const date = new Date(
+      dateString + (isStartDate ? "T00:00:00" : "T23:59:59")
+    );
+
+    const timezoneOffset = date.getTimezoneOffset() * 60000;
+    const adjustedDate = new Date(date.getTime() - timezoneOffset);
+
+    return adjustedDate.toISOString().slice(0, 19);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
-    handleClose();
+    const updatedFormData = {
+      ...formData,
+      startDate: formData.startDate
+        ? toLocalDateTime(formData.startDate, true)
+        : undefined,
+      endDate: formData.endDate
+        ? toLocalDateTime(formData.endDate, false)
+        : undefined,
+    };
+
+    try {
+      await DiscountService.updateDiscount(discount.id, updatedFormData);
+      handleClose();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật mã giảm giá:", error);
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-300 bg-opacity-75 flex justify-center items-center">
-      <div className="bg-[#f2f2f1] pt-8 pr-16 pb-8 pl-16 rounded-2xl shadow-lg w-auto relative text-black">
-        <button
-          type="button"
-          onClick={handleClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-        >
-          &times;
-        </button>
-        <h2 className="text-xl font-bold mb-8 text-center">
-          Chỉnh Sửa Phiếu Giảm Giá
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white w-full max-w-2xl p-8 rounded-2xl shadow-2xl">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Chỉnh Sửa Mã Giảm Giá
         </h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-3 gap-x-36 gap-y-4">
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-black pl-2">
-                Mã Phiếu Giảm
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
+                Mã Giảm Giá
               </label>
               <input
                 type="text"
                 name="code"
                 value={formData.code}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                required
               />
             </div>
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-black pl-2">
-                Tên Phiếu Giảm
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
+                Số Lượng
               </label>
               <input
-                type="text"
-                name="name"
-                value={formData.name}
+                type="number"
+                name="quantity"
+                value={formData.quantity}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                required
               />
             </div>
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-black pl-2">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
                 Giá Trị
               </label>
               <input
@@ -82,23 +117,25 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
                 name="value"
                 value={formData.value}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                required
               />
             </div>
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-black pl-2">
-                Ngày Phát Hành
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
+                Ngày Bắt Đầu
               </label>
               <input
                 type="date"
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                required
               />
             </div>
-            <div className="col-span-1">
-              <label className="block text-sm font-medium text-black pl-2">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700">
                 Ngày Kết Thúc
               </label>
               <input
@@ -106,34 +143,25 @@ const EditDiscount: React.FC<EditDiscountProps> = ({
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
-              />
-            </div>
-            <div className="col-span-3">
-              <label className="block text-sm font-medium text-black pl-2">
-                Hình Ảnh
-              </label>
-              <div className="mt-1 border border-black p-2 rounded-lg w-36 h-36 flex items-center justify-center bg-[#f2f2f1]">
-                <img
-                  src={formData.image}
-                  alt="Discount"
-                  className="w-32 h-32 object-cover"
-                />
-              </div>
-              <input
-                type="file"
-                name="image"
-                onChange={handleChange}
-                className="mt-2 block w-full text-sm text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-black file:text-sm file:font-semibold file:bg-[#f2f2f1] file:text-black hover:file:bg-gray-200"
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                required
               />
             </div>
           </div>
-          <div className="flex justify-end">
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+            >
+              Hủy
+            </button>
             <button
               type="submit"
-              className="bg-[#f2f2f1] text-black font-bold px-4 py-2 border border-black rounded-lg hover:bg-gray-200 transition duration-300"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              Lưu
+              Cập nhật
             </button>
           </div>
         </form>

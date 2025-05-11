@@ -1,160 +1,276 @@
 import React, { useState } from "react";
+import { ProductService } from "../../../services/ProductService";
+import { AddProductProps } from "../../../models/Product";
 
-interface AddProductProps {
-  handleClose: () => void;
-}
-
-const AddProduct: React.FC<AddProductProps> = ({ handleClose }) => {
+const AddProduct: React.FC<AddProductProps> = ({
+  handleClose,
+  setProducts,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
-    code: "",
-    category: "",
-    brand: "",
-    price: 0,
-    warranty: "",
     description: "",
-    image: "",
+    price: 0,
+    salePrice: 0,
+    stock: 0,
+    categoryId: 0,
+    brandId: 0,
+    active: true,
   });
+
+  const [images, setImages] = useState<FileList | null>(null);
+  const [attributes, setAttributes] = useState<
+    { attName: string; attValue: string }[]
+  >([]);
+  const [variants, setVariants] = useState<
+    { sku: string; variantName: string; price: number; stock: number }[]
+  >([]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]:
+        name === "active" && e.target instanceof HTMLInputElement
+          ? e.target.checked
+          : ["price", "salePrice", "stock", "categoryId", "brandId"].includes(
+              name
+            )
+          ? Number(value)
+          : value,
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImages(e.target.files);
+    }
+  };
+
+  const handleAddAttribute = () => {
+    setAttributes([...attributes, { attName: "", attValue: "" }]);
+  };
+
+  const handleAttributeChange = (
+    index: number,
+    field: string,
+    value: string
+  ) => {
+    const updated = [...attributes];
+    updated[index][field as "attName" | "attValue"] = value;
+    setAttributes(updated);
+  };
+
+  const handleAddVariant = () => {
+    setVariants([
+      ...variants,
+      { sku: "", variantName: "", price: 0, stock: 0 },
+    ]);
+  };
+
+  const handleVariantChange = (
+    index: number,
+    field: string,
+    value: string | number
+  ) => {
+    const updated = [...variants];
+    updated[index][field as keyof (typeof variants)[number]] = value as never;
+    setVariants(updated);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
-    handleClose();
+    const formDataToSend = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      formDataToSend.append(key, value.toString());
+    });
+
+    if (images) {
+      Array.from(images).forEach((img) => {
+        formDataToSend.append("images", img);
+      });
+    }
+
+    if (attributes.length > 0) {
+      formDataToSend.append("attributesJson", JSON.stringify(attributes));
+    }
+
+    if (variants.length > 0) {
+      formDataToSend.append("variantsJson", JSON.stringify(variants));
+    }
+
+    try {
+      const newProduct = await ProductService.addProduct(formDataToSend);
+      setProducts((prev) => [...prev, newProduct]);
+      handleClose();
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-300 bg-opacity-75 flex justify-center items-center">
-      <div className="bg-[#f2f2f1] pt-8 pr-16 pb-8 pl-16 rounded-2xl shadow-lg w-auto relative text-black">
-        <button
-          type="button"
-          onClick={handleClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 transition duration-300"
-        >
-          &times;
-        </button>
-        <h2 className="text-xl font-bold mb-8 text-center">Thêm Sản Phẩm</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="flex">
-            <div className="w-full pr-4">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Tên Sản Phẩm
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-start overflow-y-auto">
+      <div className="bg-white w-full max-w-3xl mt-10 mb-10 p-8 rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh]">
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Thêm Sản Phẩm
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              { label: "Tên Sản Phẩm", name: "name", type: "text" },
+              { label: "Số Lượng", name: "stock", type: "number" },
+              { label: "Giá", name: "price", type: "number" },
+              { label: "Giá Khuyến Mãi", name: "salePrice", type: "number" },
+              { label: "Danh Mục", name: "categoryId", type: "number" },
+              { label: "Thương Hiệu", name: "brandId", type: "number" },
+            ].map(({ label, name, type }) => (
+              <div key={name}>
+                <label className="block text-sm font-semibold text-gray-700">
+                  {label}
                 </label>
                 <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
+                  type={type}
+                  name={name}
+                  value={String(formData[name as keyof typeof formData] ?? "")}
                   onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Mã Sản Phẩm
-                </label>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Mô Tả
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+              rows={4}
+              placeholder="Mô tả sản phẩm..."
+            ></textarea>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700">
+              Ảnh Sản Phẩm
+            </label>
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <fieldset className="border border-gray-300 p-4 rounded-lg">
+            <legend className="block text-sm font-semibold text-gray-700">
+              Thuộc Tính (Attributes)
+            </legend>
+            {attributes.map((attr, index) => (
+              <div key={index} className="flex gap-4 mt-2 items-center">
                 <input
                   type="text"
-                  name="code"
-                  value={formData.code}
-                  onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  placeholder="Tên thuộc tính"
+                  value={attr.attName}
+                  onChange={(e) =>
+                    handleAttributeChange(index, "attName", e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Loại Sản Phẩm
-                </label>
                 <input
                   type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  placeholder="Giá trị"
+                  value={attr.attValue}
+                  onChange={(e) =>
+                    handleAttributeChange(index, "attValue", e.target.value)
+                  }
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Thương Hiệu
-                </label>
+            ))}
+            <button
+              type="button"
+              onClick={handleAddAttribute}
+              className="mt-3 px-4 py-2 text-sm bg-white text-black border border-black rounded-lg hover:bg-gray-100"
+            >
+              Thêm Attribute
+            </button>
+          </fieldset>
+
+          <fieldset className="border border-gray-300 p-4 rounded-lg">
+            <legend className="block text-sm font-semibold text-gray-700">
+              Biến Thể (Variants)
+            </legend>
+            {variants.map((variant, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-2"
+              >
                 <input
                   type="text"
-                  name="brand"
-                  value={formData.brand}
-                  onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  placeholder="SKU"
+                  value={variant.sku}
+                  onChange={(e) =>
+                    handleVariantChange(index, "sku", e.target.value)
+                  }
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Giá
-                </label>
+                <input
+                  type="text"
+                  placeholder="Tên biến thể"
+                  value={variant.variantName}
+                  onChange={(e) =>
+                    handleVariantChange(index, "variantName", e.target.value)
+                  }
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
+                />
                 <input
                   type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  placeholder="Giá"
+                  value={variant.price}
+                  onChange={(e) =>
+                    handleVariantChange(index, "price", Number(e.target.value))
+                  }
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
                 />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Bảo Hành
-                </label>
                 <input
-                  type="text"
-                  name="warranty"
-                  value={formData.warranty}
-                  onChange={handleChange}
-                  className="mt-1 block w-5/6 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
+                  type="number"
+                  placeholder="Tồn kho"
+                  value={variant.stock}
+                  onChange={(e) =>
+                    handleVariantChange(index, "stock", Number(e.target.value))
+                  }
+                  className="px-4 py-2 border border-gray-300 rounded-lg"
                 />
               </div>
-            </div>
-            <div className="w-full pl-4">
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-black pl-2">
-                  Giới Thiệu
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  className="mt-1 block w-full h-32 px-3 py-2 border border-black rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-[#f2f2f1] text-black"
-                ></textarea>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-black pl-2">
-                  Hình Ảnh
-                </label>
-                <div className="mt-1 border border-black p-2 rounded-lg w-36 h-36 flex items-center justify-center bg-[#f2f2f1]">
-                  <img
-                    src="/image/ImgProduct.png"
-                    alt="Product"
-                    className="w-32 h-32 object-cover"
-                  />
-                </div>
-                <input
-                  type="file"
-                  name="image"
-                  value={formData.image}
-                  onChange={handleChange}
-                  className="mt-2 block w-full text-sm text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-black file:text-sm file:font-semibold file:bg-[#f2f2f1] file:text-black hover:file:bg-gray-200"
-                />
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-end">
+            ))}
+            <button
+              type="button"
+              onClick={handleAddVariant}
+              className="mt-3 px-4 py-2 text-sm bg-white text-black border border-black rounded-lg hover:bg-gray-100"
+            >
+              Thêm Variant
+            </button>
+          </fieldset>
+
+          <div className="flex justify-end space-x-4 pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg"
+            >
+              Hủy
+            </button>
             <button
               type="submit"
-              className="bg-[#f2f2f1] text-black font-bold px-4 py-2 border border-black rounded-lg hover:bg-gray-200 transition duration-300"
+              className="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700"
             >
-              Thêm
+              Lưu Sản Phẩm
             </button>
           </div>
         </form>
