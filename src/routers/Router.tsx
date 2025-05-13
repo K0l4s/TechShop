@@ -86,7 +86,6 @@ const Router = () => {
         <Route path="edit-user/:customerCode" element={<EditCustomerPage />} />
         <Route path="categories" element={<ListCategoriesPage />} />
         <Route path="add-categories" element={<AddCategoryPage />} />
-        <Route path="edit-categories/:categoryId" element={<EditCategoryPage />} />
         <Route path="orders" element={<ListOrderPage />} />
       </Route>
       {/* User */}

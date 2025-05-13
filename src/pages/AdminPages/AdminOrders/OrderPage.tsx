@@ -1,135 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { LuScanEye } from 'react-icons/lu'; // Import the LuScanEye icon
-
-interface ShippingMethod {
-    id: number;
-    name: string;
-    costPerKm: number;
-}
-
-interface Item {
-    id: number;
-    productId: number;
-    productName: string;
-    productImage: string | null;
-    productPrice: number;
-    productSalePrice: number;
-    quantity: number;
-    unitPrice: number;
-    reviewed: boolean;
-}
-
-interface Order {
-    id: number;
-    status: string;
-    totalPrice: number;
-    shippingFee: number;
-    shippingAddr: string;
-    shippingMethod: ShippingMethod;
-    discountCode: string;
-    createdAt: string;
-    items: Item[];
-}
+import { LuScanEye } from 'react-icons/lu';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { jsPDF } from 'jspdf';
+import { OrderService } from "../../../services/OrderService";
+import { Order } from "../../../models/Order";
 
 const ListOrderPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [paymentFilter, setPaymentFilter] = useState<string>(''); // Payment filter
-    const [statusFilter, setStatusFilter] = useState<string>(''); // Order status filter
-
-
     const [orders, setOrders] = useState<Order[]>([]);
-    const [selectedTab, setSelectedTab] = useState<string>('all'); // Track the active tab
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null); // Selected order for modal
+    const [selectedTab, setSelectedTab] = useState<string>('all');
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
     useEffect(() => {
-        // Fetch order data (replace with your API call)
         const fetchOrders = async () => {
-            // Simulating an API call
-            const response = {
-                data: [
-                    {
-                        id: 8,
-                        status: 'COMPLETED',
-                        totalPrice: 2970000,
-                        shippingFee: 20000,
-                        shippingAddr: '123 Lê Văn Việt, phường Hiệp Phú, TP. Thủ Đức',
-                        shippingMethod: {
-                            id: 1,
-                            name: 'STANDARD',
-                            costPerKm: 10000,
-                        },
-                        discountCode: 'G10K',
-                        createdAt: '2025-04-17T20:58:14.994122',
-                        items: [
-                            {
-                                id: 15,
-                                productId: 4,
-                                productName: 'MacBook Pro M2',
-                                productImage: "https://res.cloudinary.com/ddfq7ifig/image/upload/v1745069090/hrg77dconn6ingcdjmae.jpg",
-                                productPrice: 1500000,
-                                productSalePrice: 1200000,
-                                quantity: 2,
-                                unitPrice: 1200000,
-                                reviewed: false,
-                            },
-                            {
-                                id: 16,
-                                productId: 5,
-                                productName: 'Dell XPS 15',
-                                productImage: "https://res.cloudinary.com/ddfq7ifig/image/upload/v1745593998/ipohogryy8bjcryeqzq6.jpg",
-                                productPrice: 150000,
-                                productSalePrice: 140000,
-                                quantity: 4,
-                                unitPrice: 140000,
-                                reviewed: false,
-                            },
-                        ],
-                    },
-                    {
-                        "id": 14,
-                        "status": "PENDING",
-                        "totalPrice": 1490000,
-                        "shippingFee": 20000,
-                        "shippingAddr": "123 Lê Văn Việt, phường Hiệp Phú, TP. Thủ Đức",
-                        "shippingMethod": {
-                            "id": 1,
-                            "name": "STANDARD",
-                            "costPerKm": 10000
-                        },
-                        "discountCode": "G10K",
-                        "createdAt": "2025-04-28T18:35:53.505932",
-                        "items": [
-                            {
-                                "id": 27,
-                                "productId": 15,
-                                "productName": "CASE PC",
-                                "productImage": "https://res.cloudinary.com/ddfq7ifig/image/upload/v1745593998/ipohogryy8bjcryeqzq6.jpg",
-                                "productPrice": 150000,
-                                "productSalePrice": 140000,
-                                "quantity": 2,
-                                "unitPrice": 140000,
-                                "reviewed": false
-                            },
-                            {
-                                "id": 28,
-                                "productId": 17,
-                                "productName": "TEST PRODUCT",
-                                "productImage": "https://res.cloudinary.com/ddfq7ifig/image/upload/v1745069172/jthgal8bwb5wd1ihbya1.jpg",
-                                "productPrice": 1500000,
-                                "productSalePrice": 1200000,
-                                "quantity": 1,
-                                "unitPrice": 1200000,
-                                "reviewed": false
-                            }
-                        ]
-                    }
-                ],
-            };
-            setOrders(response.data);
+            try {
+                const response = await OrderService.fetchOrders();
+                console.log(response);
+                setOrders(response.items);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
         };
-
         fetchOrders();
     }, []);
+
+    const updateOrderStatus = async (orderId: number, newStatus: string) => {
+        try {
+            const currentOrder = orders.find((order) => order.id === orderId);
+            if (!currentOrder) {
+                toast.error('Không tìm thấy đơn hàng');
+                return;
+            }
+
+            const statusFlow = ['PENDING', 'CONFIRMED', 'DELIVERING', 'DELIVERED', 'CANCELLED'];
+
+            const currentStatusIndex = statusFlow.indexOf(currentOrder.status);
+            const newStatusIndex = statusFlow.indexOf(newStatus);
+
+
+            if (newStatusIndex < currentStatusIndex) {
+                toast.error('Không thể quay lại trạng thái cũ');
+                return;
+            }
+
+            const response = await OrderService.updateOrderStatus(orderId, newStatus);
+
+            setOrders((prevOrders) =>
+                prevOrders.map((order) =>
+                    order.id === orderId ? { ...order, status: newStatus } : order
+                )
+            );
+
+            toast.success('Cập nhật trạng thái thành công');
+        } catch (error) {
+            toast.error('Cập nhật trạng thái thất bại');
+            console.error('Cập nhật trạng thái thất bại', error);
+        }
+    };
+
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -141,14 +70,6 @@ const ListOrderPage: React.FC = () => {
 
     const handleCloseModal = () => {
         setSelectedOrder(null);
-    };
-
-    const handlePaymentFilter = (status: string) => {
-        setPaymentFilter(status);
-    };
-
-    const handleStatusFilter = (status: string) => {
-        setStatusFilter(status);
     };
 
     const filteredOrders = orders.filter((order) => {
@@ -163,13 +84,61 @@ const ListOrderPage: React.FC = () => {
         const date = new Date(dateString);
         return date.toLocaleString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     };
+
     const formatCurrency = (amount: number) => {
-        return amount.toLocaleString('vi-VN'); // Định dạng theo chuẩn Việt Nam
+        return amount.toLocaleString('vi-VN');
     };
+
     const countOrdersByStatus = (status: string) => {
         return orders.filter((order) => order.status === status).length;
     };
+    function removeVietnameseTones(str: string): string {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+    const handlePrintPDF = () => {
+        if (!selectedOrder) {
+            return;
+        }
+        const doc = new jsPDF();
 
+        doc.setFont("times", "normal");
+
+        // Add Order Information
+        doc.setFontSize(16);
+        doc.text("THONG TIN DON HANG", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`ID KHACH HANG: ${selectedOrder.id}`, 20, 30);
+        doc.text(`DIA CHI: ${removeVietnameseTones(selectedOrder.shippingAddr)}`, 20, 40);
+        doc.text(`NGAY TAO DON: ${removeVietnameseTones(formatDate(selectedOrder.createdAt))}`, 20, 50);
+
+        doc.text("SAN PHAM DA MUA", 20, 60);
+
+        // Add Table Headers
+        doc.setFontSize(13);
+        const headers = ['San Pham', 'Anh', 'So luong', 'Gia', 'Giam con', 'Tong gia'];
+        const xPositions = [20, 60, 100, 140, 180, 220];
+        for (let i = 0; i < headers.length; i++) {
+            doc.text(headers[i], xPositions[i], 70);
+        }
+
+        // Add Table Content
+        selectedOrder.items.forEach((item, index) => {
+            const yPosition = 80 + (index * 10);
+            doc.text(item.productName, xPositions[0], yPosition);
+            doc.text(item.quantity.toString(), xPositions[2], yPosition);
+            doc.text(formatCurrency(item.productPrice), xPositions[3], yPosition);
+            doc.text(formatCurrency(item.productSalePrice), xPositions[4], yPosition);
+            doc.text(formatCurrency(item.unitPrice * item.quantity), xPositions[5], yPosition);
+        });
+
+        // Add Total
+        doc.text(`TONG CONG: ${formatCurrency(selectedOrder.items.reduce((total, item) => total + item.unitPrice * item.quantity, 0))} VND`, 20, 100);
+        doc.text(`PHI VAN CHUYEN: ${formatCurrency(selectedOrder.shippingFee - selectedOrder.shippingMethod.costPerKm)} VND`, 20, 110);
+        doc.text(`TONG GIA: ${formatCurrency(selectedOrder.totalPrice)} VND`, 20, 120);
+
+        // Save PDF
+        doc.save(`order_${selectedOrder.id}.pdf`);
+    };
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
@@ -186,37 +155,37 @@ const ListOrderPage: React.FC = () => {
                     className={`px-4 py-2 ${selectedTab === 'PENDING' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
                     onClick={() => setSelectedTab('PENDING')}
                 >
-                    Chờ thanh toán
+                    Chờ thanh toán <span className="text-red-500"> ({countOrdersByStatus('PENDING')})</span>
                 </button>
                 <button
-                    className={`px-4 py-2 ${selectedTab === 'SHIPPING' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
-                    onClick={() => setSelectedTab('SHIPPING')}
+                    className={`px-4 py-2 ${selectedTab === 'CONFIRMED' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
+                    onClick={() => setSelectedTab('CONFIRMED')}
                 >
-                    Vận chuyển
+                    Đã xác nhận <span className="text-red-500"> ({countOrdersByStatus('CONFIRMED')})</span>
+                </button>
+                {/* <button
+                    className={`px-4 py-2 ${selectedTab === 'PROCESSING' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
+                    onClick={() => setSelectedTab('PROCESSING')}
+                >
+                    Đang chuẩn bị hàng <span className="text-red-500"> ({countOrdersByStatus('PROCESSING')})</span>
+                </button> */}
+                <button
+                    className={`px-4 py-2 ${selectedTab === 'DELIVERING' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
+                    onClick={() => setSelectedTab('DELIVERING')}
+                >
+                    Đang vận chuyển <span className="text-red-500"> ({countOrdersByStatus('DELIVERING')})</span>
                 </button>
                 <button
-                    className={`px-4 py-2 ${selectedTab === 'SHIPPED' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
-                    onClick={() => setSelectedTab('SHIPPED')}
+                    className={`px-4 py-2 ${selectedTab === 'DELIVERED' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
+                    onClick={() => setSelectedTab('DELIVERED')}
                 >
-                    Chờ giao hàng ({countOrdersByStatus('SHIPPED')})
-                </button>
-                <button
-                    className={`px-4 py-2 ${selectedTab === 'COMPLETED' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
-                    onClick={() => setSelectedTab('COMPLETED')}
-                >
-                    Hoàn thành
+                    Hoàn thành <span className="text-red-500"> ({countOrdersByStatus('DELIVERED')})</span>
                 </button>
                 <button
                     className={`px-4 py-2 ${selectedTab === 'CANCELLED' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
                     onClick={() => setSelectedTab('CANCELLED')}
                 >
-                    Đã hủy
-                </button>
-                <button
-                    className={`px-4 py-2 ${selectedTab === 'REFUND' ? 'text-red-500 border-b-2 border-red-500' : 'text-gray-700'}`}
-                    onClick={() => setSelectedTab('REFUND')}
-                >
-                    Trả hàng/Hoàn tiền
+                    Đã hủy <span className="text-red-500"> ({countOrdersByStatus('CANCELLED')})</span>
                 </button>
             </div>
 
@@ -254,7 +223,20 @@ const ListOrderPage: React.FC = () => {
                             <td className="py-2 px-4 border-b text-center text-sm">{order.shippingMethod.name}</td>
                             <td className="py-2 px-4 border-b text-center text-sm">{order.discountCode}</td>
                             <td className="py-2 px-4 border-b text-center text-sm">{formatCurrency(order.totalPrice)} VND</td>
-                            <td className="py-2 px-4 border-b text-center text-sm">{order.status}</td>
+                            <td className="py-2 px-4 border-b text-center text-sm">
+                                <select
+                                    value={order.status}
+                                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                    className="border px-2 py-1 rounded-md"
+                                >
+                                    <option value="PENDING">Chờ thanh toán</option>
+                                    <option value="CONFIRMED">Đã xác nhận</option>
+                                    {/* <option value="PROCESSING">Đang chuẩn bị hàng</option> */}
+                                    <option value="DELIVERING">Đang vận chuyển</option>
+                                    <option value="DELIVERED">Hoàn thành</option>
+                                    <option value="CANCELLED">Đã hủy</option>
+                                </select>
+                            </td>
                             <td className="py-2 px-4 border-b text-center text-sm">
                                 <LuScanEye
                                     className="inline-block mr-2 text-2xl hover:text-green-600 cursor-pointer transition duration-300 ease-in-out"
@@ -276,10 +258,10 @@ const ListOrderPage: React.FC = () => {
                                 <strong>ID KHÁCH HÀNG:</strong> {selectedOrder.id}
                             </div>
                             <div className="py-2 px-4 text-left text-sm">
-                                <strong>ĐỊA CHỈ:</strong> {selectedOrder.shippingAddr}
+                                <strong>ĐỊA CHỈ:</strong> {removeVietnameseTones(selectedOrder.shippingAddr)}
                             </div>
                             <div className="py-2 px-4 text-left text-sm">
-                                <strong>NGÀY TẠO ĐƠN:</strong> {formatDate(selectedOrder.createdAt)}
+                                <strong>NGÀY TẠO ĐƠN:</strong> {removeVietnameseTones(formatDate(selectedOrder.createdAt))}
                             </div>
                         </div>
 
@@ -312,7 +294,6 @@ const ListOrderPage: React.FC = () => {
                                         <td className="py-2 px-4 border-b text-center text-sm">{formatCurrency(item.unitPrice * item.quantity)} VND</td>
                                     </tr>
                                 ))}
-
                             </tbody>
                         </table>
 
@@ -334,10 +315,17 @@ const ListOrderPage: React.FC = () => {
                             >
                                 Đóng
                             </button>
+                            <button
+                                onClick={handlePrintPDF}
+                                className="bg-blue-500 text-white px-6 py-2 rounded-md"
+                            >
+                                In PDF
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
+            <ToastContainer />
         </div>
     );
 };
