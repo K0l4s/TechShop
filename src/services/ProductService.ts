@@ -97,4 +97,8 @@ export const ProductService = {
     );
     return response.data.body;
   },
+  getProduct: async () => {
+    const response = await axiosInstanceAuth.get("/api/v1/product");
+    return response.data.body;
+  }
 };

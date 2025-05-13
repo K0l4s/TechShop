@@ -6,34 +6,24 @@ import { dashboardApi } from "../../../services/DashboardService"
 import { BarChart } from '@mui/x-charts/BarChart';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { FaBoxesStacked } from "react-icons/fa6"
+import { UserService } from "../../../services/UserService"
 
-const topcustomers = [
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Customer 1",
-    paid: 1000,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg", 
-    name: "Customer 2",
-    paid: 2000,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Customer 3", 
-    paid: 3000,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Customer 4",
-    paid: 4000,
-  },
-  {
-    img: "https://file.hstatic.net/1000026716/file/gearvn-ram-la-gi-4_ddc9d716da8549b4b1d5658c039dbcd3.jpg",
-    name: "Customer 5",
-    paid: 5000,
-  }
-]
+interface TopCustomer {
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    firstname: string;
+    lastname: string | null;
+    phone: string | null;
+    gender: boolean;
+    role: string;
+    avatar: string | null;
+    createdAt: string;
+    updatedAt: string;
+  };
+  amountSpent: number;
+}
 
 const Dashboard = () => {
   const [topproducts, setTopProducts] = useState<topProducts[]>([])
@@ -42,6 +32,7 @@ const Dashboard = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
   const [totalOrders, setTotalOrders] = useState(0);
+  const [topCustomers, setTopCustomers] = useState<TopCustomer[]>([]);
   const [startDate, setStartDate] = useState(() => {
     const date = new Date();
     date.setDate(1);
@@ -63,6 +54,19 @@ const Dashboard = () => {
       }
     }
     fetchTopProducts()
+
+    const fetchTopCustomers = async () => {
+      try {
+        const response = await UserService.getTop10Customer();
+        console.log(response)
+          setTopCustomers(response.items);
+          console.log(response.items);
+        
+      } catch (error) {
+        console.error("Error fetching top customers:", error);
+      }
+    };
+    fetchTopCustomers();
 
     const fetchMonthlyStats = async () => {
       try {
@@ -206,14 +210,10 @@ const Dashboard = () => {
       <div className="flex flex-wrap gap-10 justify-center mt-5">
 
         <div className="w-56 h-56 shadow-md rounded-xl bg-white flex flex-col items-center justify-center">
-          {/* <div className="w-32 h-32"> */}
-            {/* <img src="/image/logo.png" alt="" className="w-full object-fit object-cover" /> */}
-            <FaBoxesStacked size={100} className="text-blue-500" />
-          {/* </div> */}
+          <FaBoxesStacked size={100} className="text-blue-500" />
           <div className="flex flex-col items-center">
             <h3 className="text-3xl font-bold">+{totalOrders}</h3>
             <p className="text-md font-medium text-gray-500">Orders</p>
-
           </div>
         </div>
       </div>
@@ -311,12 +311,12 @@ const Dashboard = () => {
         <section className="w-full shadow-xl rounded-xl p-5 text-center bg-white">
           <h1 className="text-3xl font-bold mb-5">Top Customers</h1>
           <div className="space-y-4">
-            {topcustomers.length === 0 ? (
+            {topCustomers.length === 0 ? (
               <div className="flex items-center justify-center p-3 shadow rounded-lg bg-gray-50 text-gray-500">
                 <p>No user available</p>
               </div>
             ) : null}
-            {topcustomers?.map((customer, index) => (
+            {topCustomers?.map((customer, index) => (
               <div key={index} className={`flex items-center justify-between p-3 shadow rounded-lg ${index === 0
                 ? "bg-yellow-400 text-white"
                 : index === 1
@@ -326,9 +326,15 @@ const Dashboard = () => {
                     : "bg-gray-50"
                 }`}
               >
-                <img src={customer.img} alt={customer.name} className="w-12 h-12 object-cover rounded-full" />
-                <p className="flex-1 text-lg font-medium">{customer.name}</p>
-                <span className="text-lg font-bold">${customer.paid}</span>
+                <img 
+                  src={customer.user.avatar || "https://cdn-icons-png.flaticon.com/512/4453/4453262.png"} 
+                  alt={customer.user.username} 
+                  className="w-12 h-12 object-cover rounded-full" 
+                />
+                <p className="flex-1 text-lg font-medium">
+                  {customer.user.firstname || customer.user.username}
+                </p>
+                <span className="text-lg font-bold">{customer.amountSpent}vnđ</span>
                 <Tooltip text="View more" position="top">
                   <BiChevronRight size={20} className="cursor-pointer hover:text-blue-500" />
                 </Tooltip>
