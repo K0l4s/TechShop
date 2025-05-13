@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { DiscountService } from "../../../services/DiscountService";
 
 interface AddDiscountProps {
-  onSuccess: () => void; // Hàm callback sau khi thêm thành công
+  onSuccess: () => void;
 }
 
 const AddDiscount: React.FC<AddDiscountProps> = ({ onSuccess }) => {
@@ -25,14 +25,11 @@ const AddDiscount: React.FC<AddDiscountProps> = ({ onSuccess }) => {
   const toLocalDateTime = (dateString: string, isStartDate: boolean) => {
     const date = new Date(dateString + "T00:00:00");
 
-    // Nếu là startDate, giữ nguyên 00:00:00
-    // Nếu là endDate, đặt thành 23:59:59
     if (!isStartDate) {
-      date.setHours(23, 59, 59, 0); // Đặt giờ, phút, giây, và milliseconds
+      date.setHours(23, 59, 59, 0);
     }
 
-    // Điều chỉnh thời gian để bù múi giờ
-    const timezoneOffset = date.getTimezoneOffset() * 60000; // Chuyển phút sang milliseconds
+    const timezoneOffset = date.getTimezoneOffset() * 60000;
     const adjustedDate = new Date(date.getTime() - timezoneOffset);
 
     return adjustedDate.toISOString().slice(0, 19);
@@ -62,7 +59,7 @@ const AddDiscount: React.FC<AddDiscountProps> = ({ onSuccess }) => {
         startDate: "",
         endDate: "",
       });
-      onSuccess(); // Gọi hàm callback để cập nhật lại danh sách
+      onSuccess();
     } catch (error) {
       console.error("Lỗi khi thêm mã giảm giá:", error);
       alert("Thêm mã giảm giá thất bại. Vui lòng thử lại!");

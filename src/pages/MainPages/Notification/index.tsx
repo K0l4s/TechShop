@@ -1,3 +1,4 @@
+// components/NotificationList.tsx
 import { useState, useEffect } from "react";
 import {
   Paper,
@@ -13,239 +14,191 @@ import {
   TableCell,
   Button,
   Box,
+  Badge,
+  IconButton,
 } from "@mui/material";
-import { FaHome } from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
 import MainNavbar from "../../../components/Navbar/MainNavbar";
+import { Notification } from "../../../services/UserService";
 import { UserService } from "../../../services/UserService";
 
-type ShippingMethod = {
-  id: number;
-  name: string;
-  costPerKm: number;
-};
+const TYPES = ["ALL", "ORDER_UPDATE"]; // mở rộng nếu có thêm type khác
 
-type OrderItem = {
-  id: number;
-  productId: number;
-  productName: string;
-  productImage: string | null;
-  productPrice: number;
-  productSalePrice: number;
-  quantity: number;
-  unitPrice: number;
-  reviewed: boolean;
-};
-
-type Order = {
-  id: number;
-  status: string;
-  totalPrice: number;
-  shippingFee: number;
-  shippingAddr: string;
-  shippingMethod: ShippingMethod;
-  discountCode: string | null;
-  createdAt: string;
-  items: OrderItem[];
-};
-
-type OrdersResponse = {
-  items: Order[];
-  currentPage: number;
-  totalPages: number;
-};
-
-export default function OrderList() {
-  const [status, setStatus] = useState("ALL");
-  const [page, setPage] = useState(0);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [totalPages, setTotalPages] = useState(0);
-  const [loading, setLoading] = useState(false);
+export default function NotificationList() {
+  const [list, setList] = useState<Notification[]>([]);
+  const [filter, setFilter] = useState<string>("ALL");
+  const [unreadCount, setUnreadCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOrders = async () => {
+  // load danh sách theo filter
+  const loadList = async () => {
     setLoading(true);
     setError(null);
     try {
-     
-      const res = await UserService.getAllNotification(status, page)
-
-      if (res) {
-        const body: OrdersResponse = res;
-        setOrders(body.items);
-        setTotalPages(body.totalPages);
+      let data: Notification[];
+      if (filter === "ALL") {
+        data = await UserService.getAllNotification();       // GET /notifications
+      } else if (filter === "UNREAD") {
+        data = await UserService.getUnreadNotifications();   // GET /notifications/unread
       } else {
-        setError("Không tải được đơn hàng");
+        data = await UserService.getNotificationsByType(filter); // GET /notifications/type/...
       }
-    } catch (err: any) {
-      console.error(err);
-      setError("Lỗi kết nối đến server");
+      setList(data);
+    } catch (e) {
+      console.error(e);
+      setError("Không tải được thông báo");
     } finally {
       setLoading(false);
     }
   };
 
+  // load số lượng chưa đọc
+  const loadCount = async () => {
+    try {
+      const cnt = await UserService.getUnreadCount();       // GET /notifications/count
+      setUnreadCount(cnt);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
-    fetchOrders();
-  }, [status, page]);
+    loadList();
+    loadCount();
+  }, [filter]);
+
+  // đánh dấu đọc
+  const handleMarkRead = async (ids: number[]) => {
+    await UserService.markNotificationsRead(ids);
+    await loadList();
+    await loadCount();
+  };
+
+  // đánh dấu tất cả đọc
+  const handleMarkAllRead = async () => {
+    await UserService.markAllNotificationsRead();
+    await loadList();
+    await loadCount();
+  };
+
+  // xóa 1 notification
+  const handleDelete = async (id: number) => {
+    if (!confirm("Bạn có chắc muốn xóa thông báo này?")) return;
+    await UserService.deleteNotification(id);
+    await loadList();
+    await loadCount();
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <MainNavbar />
       <div className="max-w-5xl mx-auto p-4">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-gray-600 mb-6">
-          <FaHome size={18} />
-          <span>&gt;</span>
-          <span>Đơn hàng</span>
-        </div>
+        <Box className="flex items-center justify-between mb-4">
+          <Box className="flex items-center gap-2">
+            <Badge badgeContent={unreadCount} color="error">
+              <IconButton>
+                <FaBell size={20} />
+              </IconButton>
+            </Badge>
+            <Typography variant="h6">Thông báo</Typography>
+          </Box>
 
-        <Paper className="p-6 mb-6">
-          <Box className="flex flex-wrap items-center gap-4 mb-4">
-            <FormControl variant="outlined" size="small">
-              <InputLabel>Status</InputLabel>
+          <Box className="flex gap-2">
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={handleMarkAllRead}
+              disabled={unreadCount === 0}
+            >
+              Đánh dấu tất cả đã đọc
+            </Button>
+
+            <FormControl size="small">
+              <InputLabel>Lọc</InputLabel>
               <Select
-                label="Status"
-                value={status}
-                onChange={(e) => {
-                  setPage(0);
-                  setStatus(e.target.value);
-                }}
+                label="Lọc"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
               >
-                {[
-                  "ALL",
-                  "PENDING",
-                  "CONFIRMED",
-                  "PROCESSING",
-                  "DELIVERING",
-                  "DELIVERED",
-                  "CANCELED",
-                ].map((s) => (
-                  <MenuItem key={s} value={s}>
-                    {s}
+                <MenuItem value="ALL">Tất cả</MenuItem>
+                <MenuItem value="UNREAD">Chưa đọc</MenuItem>
+                {TYPES.filter((t) => t !== "ALL").map((t) => (
+                  <MenuItem key={t} value={t}>
+                    {t}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
-
-            <Typography variant="body2">
-              Trang {page + 1} / {totalPages}
-            </Typography>
-
-            <Box className="ml-auto flex gap-2">
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={page <= 0 || loading}
-                onClick={() => setPage((p) => p - 1)}
-              >
-                Trước
-              </Button>
-              <Button
-                variant="outlined"
-                size="small"
-                disabled={page + 1 >= totalPages || loading}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                Sau
-              </Button>
-            </Box>
           </Box>
+        </Box>
 
+        <Paper className="p-4">
           {error && (
-            <Typography color="error" className="mb-4">
+            <Typography color="error" className="mb-2">
               {error}
             </Typography>
           )}
-
           <Table size="small">
             <TableHead>
               <TableRow>
                 <TableCell>ID</TableCell>
-                <TableCell>Trạng thái</TableCell>
-                <TableCell>Tổng tiền</TableCell>
-                <TableCell>Phí ship</TableCell>
-                <TableCell>Địa chỉ</TableCell>
+                <TableCell>Tiêu đề</TableCell>
+                <TableCell>Nội dung</TableCell>
+                <TableCell>Loại</TableCell>
                 <TableCell>Thời gian</TableCell>
+                <TableCell>Trạng thái</TableCell>
+                <TableCell>Hành động</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
+                  <TableCell colSpan={7} align="center">
                     Đang tải...
                   </TableCell>
                 </TableRow>
-              ) : orders.length === 0 ? (
+              ) : list.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} align="center">
-                    Không có đơn hàng
+                  <TableCell colSpan={7} align="center">
+                    Không có thông báo
                   </TableCell>
                 </TableRow>
               ) : (
-                orders.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell>{o.id}</TableCell>
-                    <TableCell>{o.status}</TableCell>
+                list.map((n) => (
+                  <TableRow key={n.id} selected={!n.read}>
+                    <TableCell>{n.id}</TableCell>
+                    <TableCell>{n.title}</TableCell>
+                    <TableCell>{n.message}</TableCell>
+                    <TableCell>{n.type}</TableCell>
                     <TableCell>
-                      {o.totalPrice.toLocaleString()}₫
+                      {new Date(n.createdAt).toLocaleString("vi-VN")}
                     </TableCell>
                     <TableCell>
-                      {o.shippingFee.toLocaleString()}₫
+                      {n.read ? "Đã đọc" : "Chưa đọc"}
                     </TableCell>
-                    <TableCell>{o.shippingAddr}</TableCell>
                     <TableCell>
-                      {new Date(o.createdAt).toLocaleString("vi-VN")}
+                      {!n.read && (
+                        <Button
+                          size="small"
+                          onClick={() => handleMarkRead([n.id])}
+                        >
+                          Đọc
+                        </Button>
+                      )}
+                      <Button
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(n.id)}
+                      >
+                        Xóa
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
               )}
             </TableBody>
           </Table>
-
-          {/* Chi tiết items của đơn đầu tiên (ví dụ) */}
-          {orders.length > 0 && (
-            <Box className="mt-6">
-              <Typography variant="h6" className="mb-2">
-                Chi tiết đơn #{orders[0].id}
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Ảnh</TableCell>
-                    <TableCell>Sản phẩm</TableCell>
-                    <TableCell>Giá</TableCell>
-                    <TableCell>Số lượng</TableCell>
-                    <TableCell>Thành tiền</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {orders[0].items.map((it) => (
-                    <TableRow key={it.id}>
-                      <TableCell>
-                        {it.productImage ? (
-                          <img
-                            src={it.productImage}
-                            alt={it.productName}
-                            className="w-16 h-16 object-cover"
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell>{it.productName}</TableCell>
-                      <TableCell>
-                        {it.unitPrice.toLocaleString()}₫
-                      </TableCell>
-                      <TableCell>{it.quantity}</TableCell>
-                      <TableCell>
-                        {(it.unitPrice * it.quantity).toLocaleString()}₫
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          )}
         </Paper>
       </div>
     </div>
