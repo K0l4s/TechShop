@@ -84,16 +84,6 @@ const ListCustomerPage: React.FC = () => {
                                 <td className="py-2 px-4 border-b text-sm">{customer.phone}</td>
                                 <td className="py-2 px-4 border-b text-sm">{customer.address}</td>
                                 <td className="py-2 px-4 border-b text-sm">
-                                    <button
-                                        onClick={() => handleEditCustomer(customer)}
-                                        className="group rounded-full p-2 mr-2 hover:bg-blue-100"
-                                    >
-                                        <CiEdit
-                                            size={25}
-                                            style={{ color: "#34a1f4" }} // Giữ màu mặc định cho biểu tượng
-                                            className="group-hover:text-white group-hover:bg-blue-100 group-hover:p-2 rounded-full transition-all duration-300"
-                                        />
-                                    </button>
                                     <button className="group rounded-full p-2 mr-2 hover:bg-red-100">
                                         <RiDeleteBin6Line size={25} style={{ color: "#f43434" }}
                                             className="group-hover:text-white group-hover:bg-red-100 group-hover:p-2 rounded-full transition-all duration-300" />
