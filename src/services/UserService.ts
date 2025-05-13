@@ -2,7 +2,7 @@ import { axiosInstanceAuth } from "../utils/axiosIntance"; // dùng đúng file 
 
 export const UserService = {
   checkOrder: async (idProduct: string) => {
-    const response = await axiosInstanceAuth.get(`/api/v1/admin/product/${idProduct}`);
+    const response = await axiosInstanceAuth.get(`/api/v1/product/${idProduct}`);
     return response.data.body;
   },
   getAllNotification: async (status: string, page: number) =>{ 
