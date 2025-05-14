@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "../../../components/User/Sidebar";
-import OrderCard from "../../../components/User/OrderCard"; // Component hiển thị đơn hàng
+import OrderCard from "../../../components/User/OrderCard"; 
+import MainNavbar from "../../../components/Navbar/MainNavbar";
 
 // Dữ liệu mẫu của đơn hàng
 const orderProducts = [
@@ -17,8 +18,7 @@ const UserManageOrder: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Header 
-      <MainNavbar />*/}
+      <MainNavbar />
 
       <div className="flex flex-1">
         {/* Sidebar */}
