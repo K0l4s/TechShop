@@ -1,4 +1,4 @@
-import { axiosInstanceAuth } from "../utils/axiosIntance"; // dùng đúng file đã cấu hình
+import { axiosInstanceAuth } from "../utils/axiosIntance";
 
 export const ProductService = {
   fetchProducts: async () => {
@@ -76,4 +76,29 @@ export const ProductService = {
     );
     return response.data.body;
   },
+  // Update image of a product
+  updateProductImage: async (id: number, image: FormData) => {
+    const response = await axiosInstanceAuth.put(
+      `/api/v1/admin/product/image/${id}`,
+      image,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data.body;
+  },
+
+  // Delete image of a product
+  deleteProductImage: async (id: number) => {
+    const response = await axiosInstanceAuth.delete(
+      `/api/v1/admin/product/image/${id}`
+    );
+    return response.data.body;
+  },
+  getProduct: async () => {
+    const response = await axiosInstanceAuth.get("/api/v1/product");
+    return response.data.body;
+  }
 };
