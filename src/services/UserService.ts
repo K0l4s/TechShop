@@ -5,8 +5,13 @@ export const UserService = {
     const response = await axiosInstanceAuth.get(`/api/v1/admin/product/${idProduct}`);
     return response.data.body;
   },
-  getAllNotification: async (status: string, page: number) =>{ 
+  getAllNotification: async (status: string, page: number) => {
     const response = await axiosInstanceAuth.get(`api/v1/orders?status=${status}&page=${page}&size=5`);
+    return response.data.body;
+  },
+
+  getAllUser: async () => {
+    const response = await axiosInstanceAuth.get("/api/v1/admin/users");
     return response.data.body;
   }
 };
