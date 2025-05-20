@@ -21,7 +21,7 @@ import MainNavbar from '../../components/Navbar/MainNavbar';
 import {
   Warranty,
   UserService,
-  Pageable,
+  
 } from '../../services/UserService';
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20];

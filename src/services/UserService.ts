@@ -58,7 +58,9 @@ export const UserService = {
   },
   getUnreadCount: async () => {
     const response = await axiosInstanceAuth.get(`/api/v1/notifications/count`);
-    return response.data.body.unreadCount;
+    console.log(response);
+    
+    return response.data.unreadCount;
   },
 
   getNotificationsByType: async (type: string) => {

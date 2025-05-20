@@ -55,12 +55,9 @@ export default function NotificationList() {
 
   // load số lượng chưa đọc
   const loadCount = async () => {
-    try {
-      const cnt = await UserService.getUnreadCount();       // GET /notifications/count
+     const cnt = await UserService.getUnreadCount();       // GET /notifications/count
+      console.log('cnt'+cnt)
       setUnreadCount(cnt);
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   useEffect(() => {
@@ -123,7 +120,7 @@ export default function NotificationList() {
               >
                 <MenuItem value="ALL">Tất cả</MenuItem>
                 <MenuItem value="UNREAD">Chưa đọc</MenuItem>
-                {TYPES.filter((t) => t !== "ALL").map((t) => (
+                {TYPES.filter((t) => t !== "ALL")?.map((t) => (
                   <MenuItem key={t} value={t}>
                     {t}
                   </MenuItem>
@@ -158,14 +155,14 @@ export default function NotificationList() {
                     Đang tải...
                   </TableCell>
                 </TableRow>
-              ) : list.length === 0 ? (
+              ) : list?.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} align="center">
                     Không có thông báo
                   </TableCell>
                 </TableRow>
               ) : (
-                list.map((n) => (
+                list?.map((n) => (
                   <TableRow key={n.id} selected={!n.read}>
                     <TableCell>{n.id}</TableCell>
                     <TableCell>{n.title}</TableCell>

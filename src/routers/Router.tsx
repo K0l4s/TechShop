@@ -28,7 +28,7 @@ import ResetPasswordPage from '../pages/AuthPages/ResetPasswordPage';
 
 import OrderAnalyst from '../pages/AdminPages/DashboardPage/OrderAnalyst';
 import DeliveryOrder from '../pages/MainPages/DeliveryOrder';
-import Notifications from '../pages/MainPages/Notification';
+import Notifications from '../pages/MainPages/Notification/Notification';
 import WarrantiesPage from '../pages/Warranties/WarrantiesPage';
 
 
@@ -48,7 +48,7 @@ const Router = () => {
       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
       <Route path="/product-detail" element={<ProductDetailPage />} />
       <Route path="/noti" element={<Notifications />} />
-      <Route path="/delivery-order" element={<DeliveryOrder />} />
+      <Route path="/delivery-order" element={<WarrantiesPage />} />
       {/* Các path cần chỉnh layout */}
       {/* Admin */}
       <Route path="/admin/*" element={<AdminLayout />} >
@@ -89,7 +89,7 @@ const Router = () => {
         <Route path="add-categories" element={<AddCategoryPage />} />
         <Route path="edit-categories/:categoryId" element={<EditCategoryPage />} />
         <Route path="orders" element={<ListOrderPage />} />
-        <Route path="orders" element={<WarrantiesPage />} />
+        {/* <Route path="orders" element={<WarrantiesPage />} /> */}
       </Route>
       {/* User */}
       <Route path="*" element={<MainLayout />}>
